@@ -1,0 +1,1374 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZYFONIX | Video Editor pre tvorcov a influencerov</title>
+<meta name="description" content="Video editor pre CZ/SK YouTuberov a influencerov. Dynamický strih, ktorý drží divákov pri obrazovke – YouTube, Shorts, Reels a TikTok.">
+<meta name="theme-color" content="#060608">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ZYFONIX | Video Editor pre tvorcov">
+<meta property="og:description" content="Strih, ktorý udrží divákov pri obrazovke. Spolupráce s poprednými CZ/SK tvorcami.">
+<meta property="og:image" content="https://zyfonixeditor.eu/assets/og.jpg">
+<meta property="og:url" content="https://zyfonixeditor.eu/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060608;--s1:#0d0d11;--s2:#14141a;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.15);
+  --text:#f5f5f7;--muted:#9d9daa;--dim:#62626e;--green:#22c55e;--red:#ff3b3b;
+  --chrome:linear-gradient(180deg,#d2d2d9 0%,#fff 40%,#eeeef2 50%,#a3a3ae 58%,#e8e8ee 100%);
+  --blue:#2f8cff;--c1:#fff;--c2:#fff;--c3:#d6d6de;
+  --grad:linear-gradient(180deg,#fff,#dcdce3);
+  --ease:cubic-bezier(.16,1,.3,1);--max:1240px;
+  --f-display:"Orbitron",sans-serif;--f-head:"Space Grotesk",sans-serif;--f-body:"Inter",system-ui,sans-serif;--f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth}
+html.lock{overflow:hidden}
+section[id]{scroll-margin-top:80px}
+body{background:var(--bg);color:var(--text);font-family:var(--f-body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:clip}
+img,svg,canvas{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:#fff;color:#000}
+:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:6px}
+body.loading{overflow:hidden}
+
+.wrap{width:min(var(--max),100% - 32px);margin-inline:auto}
+.chrome{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;border:1px solid var(--line2);background:rgba(255,255,255,.03);font-family:var(--f-mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#d6d6de}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.7)}
+.h2{font-family:var(--f-display);font-weight:800;font-size:clamp(30px,4.6vw,60px);line-height:1.1;letter-spacing:-.01em;text-transform:uppercase;margin:22px 0 18px;
+  background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,.95) 50%,transparent 58%) no-repeat,linear-gradient(180deg,#fff,#a1a1aa);background-size:250% 100%,100% 100%;background-position:160% 0,0 0;-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);font-size:18px;max-width:600px}
+section{position:relative;padding:140px 0}
+.sec-head{margin-bottom:64px}
+.sec-head.center{text-align:center;display:flex;flex-direction:column;align-items:center}
+
+/* ---------- pozadie ---------- */
+.bg{position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:72px 72px;opacity:.45;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 20%,#000 10%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 20%,#000 10%,transparent 70%)}
+.bg-spot{position:absolute;width:900px;height:900px;left:0;top:0;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.05),transparent 62%);translate:-50% -50%;will-change:transform}
+.aur{position:absolute;width:70vmax;height:70vmax;border-radius:50%;opacity:.5}
+.aur.a1{background:radial-gradient(circle,rgba(47,140,255,.16),transparent 62%);top:-30vmax;right:-25vmax}
+.grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-4%,3%)}40%{transform:translate(3%,-5%)}60%{transform:translate(-6%,-2%)}80%{transform:translate(5%,4%)}100%{transform:translate(0,0)}}
+
+/* ---------- loader ---------- */
+#loader{position:fixed;inset:0;z-index:200;display:grid;place-items:center;pointer-events:none}
+#loader .panel{position:absolute;left:0;right:0;height:50.5%;background:#030304;transition:transform 1s var(--ease)}
+#loader .panel.top{top:0}#loader .panel.bot{bottom:0}
+#loader .inner{position:relative;text-align:center;transition:opacity .4s,transform .8s var(--ease)}
+#loader .brand{font-family:var(--f-display);font-weight:900;font-size:clamp(34px,6vw,56px);letter-spacing:.08em}
+#loader .meta{display:flex;justify-content:space-between;gap:40px;margin-top:18px;font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.2em}
+#loader .bar{height:2px;background:rgba(255,255,255,.1);margin-top:12px;overflow:hidden}
+#loader .bar i{display:block;height:100%;width:100%;background:var(--grad);transform-origin:left;transform:scaleX(0);box-shadow:0 0 12px #fff}
+#loader.done .panel.top{transform:translateY(-100%)}
+#loader.done .panel.bot{transform:translateY(100%)}
+#loader.done .inner{opacity:0;transform:scale(.92)}
+
+/* ---------- časová os + HUD ---------- */
+.timeline{position:fixed;top:0;left:0;right:0;height:16px;z-index:60;pointer-events:none}
+.timeline .ticks{position:absolute;inset:0 0 auto;height:6px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 1px,transparent 1px 12px);opacity:.5}
+.timeline .fill{position:absolute;top:0;left:0;height:3px;width:100%;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,#55555f,#fff);box-shadow:0 0 14px rgba(255,255,255,.5)}
+.timeline .head{position:absolute;top:0;left:0;width:2px;height:16px;background:#fff;box-shadow:0 0 10px #fff;will-change:transform}
+.timeline .head::after{content:"";position:absolute;bottom:-5px;left:-4px;border:5px solid transparent;border-top-color:#fff}
+.hud{position:fixed;left:24px;bottom:22px;z-index:60;display:flex;align-items:center;gap:14px;font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;color:var(--muted);pointer-events:none;transition:opacity .4s}
+.hud .rec{display:flex;align-items:center;gap:7px;color:#fff}
+.hud .rec i{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1.2s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hud .tc{color:#fff;font-variant-numeric:tabular-nums}
+
+/* ---------- kurzor ---------- */
+.cursor{position:fixed;left:0;top:0;z-index:150;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;border:1px solid rgba(255,255,255,.55);pointer-events:none;display:grid;place-items:center;
+  transition:width .35s var(--ease),height .35s var(--ease),margin .35s var(--ease),background .3s,border-color .3s,opacity .3s;will-change:transform;opacity:0}
+.cursor span{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;color:#000;font-weight:600;opacity:0;transition:opacity .2s}
+.cursor.on{opacity:1}
+.cursor.hover{width:62px;height:62px;margin:-31px 0 0 -31px;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.8)}
+.cursor.play{width:96px;height:96px;margin:-48px 0 0 -48px;background:#fff;border-color:#fff}
+.cursor.play span{opacity:1}
+@media (hover:none),(pointer:coarse){.cursor{display:none}}
+
+/* ---------- navigácia ---------- */
+.nav{position:fixed;top:24px;left:50%;z-index:70;width:min(var(--max),100% - 32px);translate:-50% 0;display:flex;align-items:center;justify-content:space-between;gap:16px;height:66px;padding:0 9px 0 22px;border-radius:999px;
+  background:rgba(10,10,13,.72);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .5s var(--ease)}
+.nav.hide{transform:translateY(-140%)}
+.logo{display:flex;align-items:center;gap:12px;font-family:var(--f-display);font-weight:900;font-size:19px;letter-spacing:.07em}
+.logo-mark{width:34px;height:34px;border-radius:9px;background:var(--chrome);display:grid;place-items:center;color:#0c0c0f;font-size:17px;box-shadow:0 0 18px rgba(255,255,255,.2)}
+.nav-links{display:flex;gap:2px}
+.nav-links a{position:relative;padding:9px 14px;border-radius:999px;font-size:14.5px;color:var(--muted);transition:color .25s}
+.nav-links a::after{content:"";position:absolute;left:14px;right:14px;bottom:5px;height:1px;background:#fff;transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);transform-origin:left}
+.burger{display:none;width:48px;height:48px;border-radius:50%;border:1px solid var(--line2);position:relative}
+.burger i{position:absolute;left:15px;right:15px;height:1.5px;background:#fff;transition:transform .4s var(--ease),top .4s var(--ease)}
+.burger i:nth-child(1){top:19px}.burger i:nth-child(2){top:27px}
+.menu-open .burger i:nth-child(1){top:23px;transform:rotate(45deg)}
+.menu-open .burger i:nth-child(2){top:23px;transform:rotate(-45deg)}
+.mmenu{position:fixed;inset:0;z-index:65;background:rgba(6,6,8,.97);display:flex;flex-direction:column;justify-content:center;padding:100px 28px 40px;clip-path:circle(0 at calc(100% - 50px) 50px);transition:clip-path .8s var(--ease);visibility:hidden}
+.menu-open .mmenu{clip-path:circle(150% at calc(100% - 50px) 50px);visibility:visible}
+.mmenu a{font-family:var(--f-head);font-weight:700;font-size:clamp(36px,10vw,56px);letter-spacing:-.03em;line-height:1.25;opacity:0;transform:translateY(30px);transition:opacity .5s,transform .6s var(--ease)}
+.menu-open .mmenu a{opacity:1;transform:none}
+.mmenu small{font-family:var(--f-mono);font-size:12px;color:var(--dim);margin-right:12px;vertical-align:middle}
+
+/* ---------- tlačidlá ---------- */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:58px;padding:0 30px;border-radius:999px;font-family:var(--f-head);font-weight:600;font-size:16.5px;white-space:nowrap;overflow:hidden;isolation:isolate;transition:box-shadow .3s,border-color .3s}
+.btn .lbl{display:inline-flex;flex-direction:column;height:1.3em;overflow:hidden;clip-path:inset(0);line-height:1.3}
+.btn .lbl span{transition:transform .5s var(--ease)}
+.btn:hover .lbl span{transform:translateY(-100%)}
+.btn-primary{background:var(--chrome);color:#09090b;box-shadow:0 0 0 1px rgba(255,255,255,.25),0 14px 40px -12px rgba(255,255,255,.45)}
+.btn-primary:hover{box-shadow:0 0 0 1px rgba(255,255,255,.4),0 18px 50px -10px rgba(255,255,255,.55)}
+.btn-ghost{border:1px solid var(--line2);background:rgba(255,255,255,.03);clip-path:inset(0 round 999px)}
+.btn-ghost::before{content:"";position:absolute;inset:0;z-index:-1;background:#fff;transform:translateY(101%);transition:transform .5s var(--ease)}
+.btn-ghost:hover{color:#09090b;border-color:#fff}
+.btn-ghost:hover::before{transform:none}
+.nav .btn{height:48px;padding:0 20px;font-size:14.5px}
+
+/* ---------- hero s 3D logom ---------- */
+.hero{min-height:100svh;display:flex;align-items:center;padding:108px 0 84px;overflow:hidden}
+.finder{position:absolute;inset:110px 40px 50px;pointer-events:none}
+.finder i{position:absolute;width:34px;height:34px;border:1.5px solid rgba(255,255,255,.35)}
+.finder i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0}
+.finder i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0}
+.finder i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0}
+.finder i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0}
+.finder .lbl{position:absolute;font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;color:var(--dim)}
+.finder .tl{top:10px;left:48px}.finder .tr{top:10px;right:48px}.finder .bl{bottom:10px;left:48px}.finder .br{bottom:10px;right:48px}
+.hero-grid{position:relative;display:grid;grid-template-columns:1fr;justify-items:center;text-align:center;gap:0}
+.hero-copy{position:relative;z-index:2}
+.status{display:inline-flex;align-items:center;gap:12px;padding:10px 20px;border-radius:999px;border:1px solid var(--line2);background:rgba(255,255,255,.035);font-family:var(--f-mono);font-size:13.5px;color:#d6d6de}
+.dot{position:relative;width:9px;height:9px;border-radius:50%;background:var(--green);flex:none}
+.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--green);animation:ping 2s var(--ease) infinite}
+@keyframes ping{0%{transform:scale(1);opacity:.55}70%,100%{transform:scale(2.8);opacity:0}}
+.hero-title{font-family:var(--f-display);font-weight:900;font-size:clamp(54px,9vw,138px);line-height:1;letter-spacing:.01em;margin:22px 0 16px;padding:0 .04em;transform-origin:50% 60%;
+  background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,.95) 50%,transparent 58%) no-repeat,linear-gradient(180deg,#fff 0%,#f2f2f5 45%,#a9a9b4 100%);background-size:250% 100%,100% 100%;background-position:160% 0,0 0;
+  -webkit-background-clip:text;background-clip:text;color:transparent;opacity:0}
+.ready .hero-title{animation:mHeroTitle 1.5s var(--ease) .15s both,mShine 1.8s cubic-bezier(.65,0,.35,1) 1.3s both}
+.ready .hero-title.alt{animation:mHeroTitle 1.5s var(--ease) .15s both,mShineB 1.8s cubic-bezier(.65,0,.35,1) both}
+@keyframes mHeroTitle{from{opacity:0;scale:1.14;letter-spacing:.14em;filter:blur(24px)}to{opacity:1;scale:none;letter-spacing:.01em;filter:none}}
+@keyframes mShine{from{background-position:160% 0,0 0}to{background-position:-60% 0,0 0}}
+@keyframes mShineB{from{background-position:160% 0,0 0}to{background-position:-60% 0,0 0}}
+.role{font-family:var(--f-head);font-size:clamp(20px,2.4vw,28px);font-weight:500;color:var(--muted);display:flex;align-items:baseline;justify-content:center;gap:.35em;flex-wrap:wrap}
+.role b{color:var(--text);font-weight:600}
+.rotator{display:inline-grid;color:var(--text);transition:width .6s var(--ease)}
+.rotator span{grid-area:1/1;justify-self:start;opacity:0;white-space:nowrap}
+.rotator span.on{animation:rotIn .75s var(--ease) both}
+.rotator span.out{animation:rotOut .55s var(--ease) both}
+@keyframes rotIn{from{opacity:0;transform:translateY(.45em);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes rotOut{from{opacity:1;transform:none;filter:none}to{opacity:0;transform:translateY(-.45em);filter:blur(6px)}}
+.hero .desc{max-width:640px;margin:18px auto 32px;color:var(--muted);font-size:18px}
+.ctas{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.chips{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;margin-top:30px;font-family:var(--f-mono);font-size:13.5px;color:var(--muted)}
+.chips b{color:var(--text);font-weight:500}
+.intro{opacity:0}
+.ready .intro{animation:mFade .95s var(--ease) var(--d,0ms) both}
+.hero-3d{position:relative;order:-1;width:clamp(190px,25vh,270px);aspect-ratio:1;margin:0 auto -4px}
+.hero-3d::before{content:"";position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,rgba(47,140,255,.28),transparent 64%)}
+.hero-3d canvas{position:absolute;inset:0;width:100%!important;height:100%!important;opacity:0;transition:opacity 1.2s var(--ease)}
+.hero-3d.gl canvas{opacity:1}
+.hero-3d .fallback{position:absolute;inset:28%;border-radius:22%;transition:opacity .6s}
+.hero-3d.gl .fallback{opacity:0}
+.orbit{position:absolute;inset:4%;border-radius:50%;border:1px dashed rgba(255,255,255,.12);animation:spin2 40s linear infinite}
+.orbit::after{content:"";position:absolute;top:-4px;left:50%;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 14px #fff}
+@keyframes spin2{to{transform:rotate(360deg)}}
+.hero-3d .tag3d{position:absolute;padding:8px 14px;border-radius:999px;background:rgba(14,14,18,.88);border:1px solid var(--line2);font-family:var(--f-mono);font-size:12px;white-space:nowrap;animation:float 6s ease-in-out infinite}
+.tag3d.t1{top:22%;right:96%}.tag3d.t2{bottom:20%;left:96%;animation-delay:-3s}
+.scroll-cue{position:absolute;left:0;right:0;width:max-content;margin:0 auto;bottom:28px;display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--f-mono);font-size:11px;letter-spacing:.24em;color:var(--dim)}
+.scroll-cue i{width:1px;height:46px;background:linear-gradient(#fff,transparent);transform-origin:top;animation:cue 2s var(--ease) infinite}
+@keyframes cue{0%{transform:scaleY(0)}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ---------- 3D stena videí ---------- */
+.wall{position:relative;height:clamp(420px,62vw,640px);padding:0;overflow:hidden;perspective:1400px;
+  mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent),linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-composite:intersect;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent);}
+.wall-inner{position:absolute;left:50%;top:50%;display:grid;gap:18px;transform-origin:25% 50%;transform:translate(-25%,-50%) rotateX(38deg) rotateZ(-14deg) scale(1.05)}
+.wall-row{display:flex;gap:18px;width:max-content;animation:wallL var(--dur,100s) linear var(--del,0s) infinite}
+.wall-row.r{animation-name:wallR}
+.wall.off .wall-row{animation-play-state:paused}
+@keyframes wallL{to{transform:translate3d(-50%,0,0)}}
+@keyframes wallR{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}
+.tile{flex:none;width:320px;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#111;border:1px solid rgba(255,255,255,.1);position:relative}
+.tile img{width:100%;height:100%;object-fit:cover;filter:saturate(.9) brightness(.85);transition:filter .4s}
+.tile:hover img{filter:none}
+.tile:hover{border-color:rgba(255,255,255,.5)}
+.wall-label{position:absolute;left:50%;top:50%;translate:-50% -50%;z-index:3;display:flex;align-items:center;gap:14px;padding:14px 26px 14px 14px;border-radius:999px;background:rgba(8,8,10,.88);border:1px solid var(--line2);font-family:var(--f-head);font-weight:600;font-size:17px;white-space:nowrap;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.wall-label i{width:46px;height:46px;border-radius:50%;background:var(--chrome);display:grid;place-items:center}
+.wall-label i::after{content:"";margin-left:3px;border-left:13px solid #0a0a0c;border-top:8px solid transparent;border-bottom:8px solid transparent}
+.wall-label span{color:var(--muted);font-weight:500}
+
+/* ---------- klienti marquee ---------- */
+.trust{padding:90px 0 60px}
+.trust .eyebrow{display:flex;justify-content:center;margin-bottom:34px}
+.mq{overflow:hidden;padding:8px 0;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.mq-track{display:flex;gap:18px;width:max-content;padding-right:18px;animation:mq 45s linear infinite}
+.mq:hover .mq-track,.trust.off .mq-track{animation-play-state:paused}
+@keyframes mq{to{transform:translate3d(-33.3333%,0,0)}}
+.pill{display:flex;align-items:center;gap:14px;padding:9px 24px 9px 9px;border-radius:999px;background:var(--s1);border:1px solid var(--line);transition:border-color .3s,background .3s}
+.pill:hover{border-color:var(--line2);background:var(--s2)}
+.pill img{width:52px;height:52px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.22)}
+.pill b{font-family:var(--f-head);font-weight:600;font-size:18px;white-space:nowrap}
+.pill span{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.pill img{transition:box-shadow .3s}
+
+/* ---------- reveal ---------- */
+/* rovnaké plynulé objavovanie ako na tvojom webe – opakuje sa pri scrolle hore aj dole */
+[data-reveal]:not(.in){opacity:0}
+[data-reveal].in{animation:mRise 1.05s var(--ease) var(--d,0ms) both}
+[data-reveal="txt"].in{animation-name:mFade;animation-duration:.95s}
+.h2[data-reveal].in{animation:mFade .95s var(--ease) var(--d,0ms) both,mShine 1.6s cubic-bezier(.65,0,.35,1) calc(var(--d,0ms) + 500ms) both}
+@keyframes mRise{from{opacity:0;translate:0 var(--rv,44px);scale:.965;filter:blur(10px)}to{opacity:1;translate:none;scale:none;filter:none}}
+@keyframes mFade{from{opacity:0;translate:0 calc(var(--rv,44px) / 2);filter:blur(8px)}to{opacity:1;translate:none;filter:none}}
+@keyframes mOut{to{opacity:0;translate:0 14px;scale:.98}}
+@keyframes mThumb{from{scale:1.2}to{scale:none}}
+@keyframes mPop{from{opacity:0;scale:.4}to{opacity:1;scale:none}}
+@keyframes mSettle{0%{text-shadow:0 0 0 rgba(255,255,255,0)}30%{text-shadow:0 0 24px rgba(255,255,255,.55)}100%{text-shadow:0 0 0 rgba(255,255,255,0)}}
+.cnt{font-variant-numeric:tabular-nums}
+.settle{animation:mSettle 1.1s ease-out}
+.card.in .thumb img{animation:mThumb 1.5s var(--ease) var(--d,0ms) both}
+.ccard.in .av{animation:mPop .8s cubic-bezier(.34,1.56,.64,1) calc(var(--d,0ms) + 200ms) both}
+.grid .card.leave{animation:mOut .24s var(--ease) both}
+
+/* ---------- o mne ---------- */
+.about{display:grid;grid-template-columns:.85fr 1.15fr;gap:72px;align-items:center}
+.me{position:relative;aspect-ratio:4/5;border-radius:32px;background:var(--s1);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;transform:perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .6s var(--ease)}
+.me::before{content:"";position:absolute;width:140%;height:70%;top:-10%;background:radial-gradient(circle,rgba(47,140,255,.32),transparent 60%);filter:blur(10px)}
+.me-ring{position:relative;width:68%;aspect-ratio:1;border-radius:50%;padding:4px;isolation:isolate}
+.me-ring::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:50%;background:conic-gradient(#fff,var(--blue) 25%,#1a1a22 50%,var(--blue) 75%,#fff);animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.me-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;background:#000}
+.me-tag{position:absolute;padding:10px 16px;border-radius:999px;background:rgba(14,14,18,.9);border:1px solid var(--line2);font-family:var(--f-mono);font-size:12.5px;white-space:nowrap;animation:float 6s ease-in-out infinite}
+.me-tag:nth-of-type(1){top:6%;left:6%}
+.me-tag:nth-of-type(2){bottom:6%;right:6%;animation-delay:-2s}
+.me-tag:nth-of-type(3){bottom:6%;left:6%;animation-delay:-4s}
+@keyframes float{50%{transform:translateY(-12px)}}
+.me-name{position:absolute;top:30px;right:28px;text-align:right;font-family:var(--f-display);font-weight:900;font-size:15px;letter-spacing:.12em;color:var(--muted)}
+.words{font-family:var(--f-head);font-weight:500;font-size:clamp(23px,2.5vw,32px);line-height:1.38;letter-spacing:-.015em;margin:20px 0 34px}
+.words .wd{opacity:.16;transition:opacity .3s}
+.words .wd.lit{opacity:1}
+.bullets{list-style:none;display:grid;gap:12px}
+.bullets li{display:flex;gap:16px;align-items:center;padding:16px 20px;border-radius:18px;background:var(--s1);border:1px solid var(--line)}
+.bullets .ic{flex:none;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);font-size:21px;line-height:1;transition:transform .4s var(--ease)}
+.bullets li:hover .ic{transform:scale(1.1) rotate(-6deg)}
+.bullets .ic svg{width:20px;height:20px}
+.bullets b{display:block;font-family:var(--f-head);font-weight:600}
+.bullets span{color:var(--muted);font-size:15px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:90px}
+.stat{position:relative;padding:34px 26px;border-radius:24px;background:var(--s1);border:1px solid var(--line);overflow:hidden}
+.stat{display:flex;flex-direction:column;min-height:250px;padding:30px 28px!important;border-radius:28px!important;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01))!important;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:border-color .3s,background .3s,transform .6s var(--ease)}
+.stat:hover{border-color:var(--line2)}
+.stat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:auto;padding-bottom:30px}
+.stat-top span{font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.stat-top i{width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;font-style:normal;font-size:19px;line-height:1}
+.stat .num{font-family:var(--f-display);font-weight:800;font-size:clamp(36px,4vw,58px);line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.stat .lbl{color:var(--muted);margin-top:12px;font-size:16px}
+.live{display:inline-flex;align-self:flex-start;align-items:center;gap:8px;margin-top:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line2);font-family:var(--f-mono);font-size:11.5px;color:#d6d6de}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.stat .bar{position:absolute;left:0;bottom:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,#fff,transparent);transform:scaleX(0);transition:transform 1.6s var(--ease) .2s}
+.stat.in .bar{transform:scaleX(1)}
+
+/* ---------- portfólio: klienti → vybraný klient → videá ---------- */
+.clients{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-bottom:26px}
+.ccard{position:relative;flex:0 0 auto;min-width:270px;display:flex;align-items:center;gap:14px;padding:10px 12px 10px 10px;border-radius:999px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);text-align:left;overflow:hidden;
+  transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s var(--ease),border-color .3s,background .35s,color .35s,box-shadow .35s}
+.ccard::before{content:"";position:absolute;inset:0;border-radius:inherit;background:#fff;opacity:0;transition:opacity .45s var(--ease);z-index:0}
+.ccard>*{position:relative;z-index:1}
+.ccard:hover{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.07)}
+.ccard.active{color:#000;border-color:#fff;box-shadow:0 12px 32px rgba(255,255,255,.2)}
+.ccard.active::before{opacity:1}
+.ccard .av{flex:none;width:48px;height:48px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.22);background:#111;display:grid;place-items:center;font-family:var(--f-display);font-weight:900}
+.ccard.active .av{box-shadow:0 0 0 2px #0a0a0c}
+.ccard .av img{width:100%;height:100%;object-fit:cover}
+.ccard .meta{min-width:0;flex:1}
+.ccard b{display:block;font-family:var(--f-head);font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ccard small{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.ccard.active small{color:#3f3f46}
+.ccard .yt{flex:none;width:38px;height:38px;margin-left:8px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;font-size:14px;transition:background .25s,color .25s}
+.ccard .yt:hover{background:#fff;color:#000}
+.ccard.active .yt{border-color:rgba(0,0,0,.2);background:rgba(0,0,0,.05)}
+.sel{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:14px 16px 14px 14px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid var(--line);margin-bottom:28px}
+.sel-l{display:flex;align-items:center;gap:14px;min-width:0;flex-wrap:wrap}
+.sel-l img{width:44px;height:44px;border-radius:50%;flex:none;box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.sel-name{font-family:var(--f-head);font-weight:600;font-size:18px}
+.sel-name span{color:var(--muted);font-weight:500}
+.sel-badge{font-family:var(--f-mono);font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--line2);color:#d8d8e0;white-space:nowrap}
+.sel-r{display:flex;align-items:center;gap:14px;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.sel-r a{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;background:#fff;color:#09090b;font-family:var(--f-head);font-weight:600;font-size:14px;transition:transform .3s var(--ease),box-shadow .3s}
+.sel-r a:hover{box-shadow:0 10px 30px -10px rgba(255,255,255,.5)}
+.sel-r a:hover{transform:translateY(-2px)}
+.sel-r a[hidden]{display:none}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{position:relative;display:flex;flex-direction:column;text-align:left;border-radius:22px;background:var(--s1);border:1px solid var(--line);transform:perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s var(--ease),border-color .3s,box-shadow .4s}
+.card:hover{border-color:var(--line2)}
+.card .thumb{position:relative;aspect-ratio:16/9;border-radius:21px 21px 0 0;overflow:hidden;clip-path:inset(0 round 21px 21px 0 0);background:#111}
+.card .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease)}
+.card:hover .thumb img{transform:scale(1.07)}
+.glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(500px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.14),transparent 40%);opacity:0;transition:opacity .3s}
+.card:hover .glare,.ccard:hover .glare{opacity:1}
+.card .shade{position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.6))}
+.badge{position:absolute;top:12px;left:12px;font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;padding:6px 11px;border-radius:999px;background:rgba(0,0,0,.66);border:1px solid rgba(255,255,255,.16)}
+.views{position:absolute;right:12px;bottom:12px;font-family:var(--f-mono);font-size:12px;padding:6px 11px;border-radius:999px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;gap:6px}
+.views svg{width:14px;height:14px}
+.views b{font-weight:500}
+.views:empty{display:none}
+.play{position:absolute;inset:0;display:grid;place-items:center}
+.play i{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.94);display:grid;place-items:center;transform:scale(.85);opacity:.92;transition:transform .5s var(--ease),opacity .3s;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.play i::after{content:"";margin-left:4px;border-left:17px solid #09090b;border-top:11px solid transparent;border-bottom:11px solid transparent}
+.card:hover .play i{transform:scale(1)}
+@media (hover:hover) and (pointer:fine){.play i{opacity:0}}
+.card-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px;flex:1}
+.card-body h3{font-family:var(--f-head);font-weight:600;font-size:17px;line-height:1.35}
+.owner{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13.5px;margin-top:auto}
+.owner img{width:24px;height:24px;border-radius:50%}
+
+/* ---------- proces (vodorovne) ---------- */
+.process{padding:0}
+.process-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden}
+.process-track{display:flex;gap:24px;padding:0 max(16px,calc((100vw - var(--max)) / 2));will-change:transform}
+.p-intro{flex:none;width:min(520px,80vw);display:flex;flex-direction:column;justify-content:center;padding-right:40px}
+.p-card{flex:none;position:relative;width:min(440px,78vw);height:min(500px,62vh);padding:40px;border-radius:30px;background:linear-gradient(180deg,var(--s2),var(--s1));border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .6s var(--ease)}
+.p-card .n{font-family:var(--f-display);font-weight:900;font-size:120px;line-height:.8;background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.9}
+.p-card h3{font-family:var(--f-head);font-weight:700;font-size:30px;letter-spacing:-.02em;margin-bottom:10px}
+.p-card p{color:var(--muted);font-size:16.5px}
+.p-card .tag{position:absolute;top:40px;right:40px;font-family:var(--f-mono);font-size:12px;color:var(--dim);letter-spacing:.14em}
+.p-progress{position:absolute;left:max(16px,calc((100vw - var(--max)) / 2));right:max(16px,calc((100vw - var(--max)) / 2));bottom:8vh;height:1px;background:var(--line2)}
+.p-progress i{position:absolute;inset:0;background:#fff;transform-origin:left;transform:scaleX(0)}
+
+/* ---------- služby ---------- */
+.services{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.svc{position:relative;padding:40px;border-radius:28px;background:var(--s1);border:1px solid var(--line);overflow:hidden;isolation:isolate;transform:perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .6s var(--ease)}
+.svc::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;padding:1px;background:radial-gradient(400px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.55),transparent 45%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:0;transition:opacity .4s}
+.svc::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-2;background:radial-gradient(500px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.05),transparent 45%);opacity:0;transition:opacity .4s}
+.svc:hover::before,.svc:hover::after{opacity:1}
+.svc .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:56px}
+.svc .ic{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);font-size:26px;line-height:1;transition:transform .6s var(--ease),background .3s}
+.svc:hover .ic{background:rgba(255,255,255,.12)}
+.svc:hover .ic{transform:rotate(-8deg) scale(1.08)}
+.svc .ic svg{width:26px;height:26px}
+.svc .n{font-family:var(--f-mono);font-size:13px;color:var(--dim);letter-spacing:.14em}
+.svc h3{font-family:var(--f-head);font-weight:700;font-size:28px;letter-spacing:-.02em;margin-bottom:12px}
+.svc p{color:var(--muted)}
+.svc .out{margin-top:24px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--f-mono);font-size:13px;color:#d8d8e0}
+
+/* ---------- recenzia ---------- */
+.review{position:relative;max-width:980px;margin:0 auto;text-align:center}
+.stars{display:flex;justify-content:center;gap:6px;margin-bottom:26px}
+.stars svg{width:22px;height:22px}
+.review blockquote{font-family:var(--f-head);font-weight:600;font-size:clamp(28px,4.2vw,54px);line-height:1.15;letter-spacing:-.03em}
+.who{display:inline-flex;align-items:center;gap:16px;text-align:left;margin-top:40px;padding:10px 22px 10px 10px;border-radius:999px;border:1px solid var(--line);background:var(--s1)}
+.who img{width:58px;height:58px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.who b{font-family:var(--f-head);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.who b em{font-style:normal;font-family:var(--f-mono);font-size:11px;font-weight:400;color:var(--green);letter-spacing:.04em}
+.who span{color:var(--muted);font-size:14px}
+.soon{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:80px}
+.soon-card{position:relative;padding:28px;border-radius:24px;background:var(--s1);border:1px dashed var(--line2);overflow:hidden;clip-path:inset(0 round 24px);text-align:left}
+.soon-card::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:60%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.06),transparent);animation:shimmer 2.6s linear infinite}
+.soon-card:nth-child(2)::after{animation-delay:-.9s}.soon-card:nth-child(3)::after{animation-delay:-1.8s}
+@keyframes shimmer{to{transform:translate3d(270%,0,0)}}
+.soon-stars{display:flex;gap:4px;margin-bottom:18px;opacity:.25}
+.soon-stars i{width:14px;height:14px;background:#fff;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.soon-line{height:10px;border-radius:6px;background:rgba(255,255,255,.07);margin-bottom:10px}
+.soon-who{display:flex;align-items:center;gap:12px;margin-top:22px}
+.soon-who i{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.07);flex:none}
+.soon-who span{flex:1}
+.soon-tag{position:absolute;top:22px;right:22px;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;padding:6px 11px;border-radius:999px;border:1px solid var(--line2);color:#d8d8e0}
+.soon-note{margin-top:26px;text-align:center;font-family:var(--f-mono);font-size:13px;color:var(--muted);display:flex;justify-content:center;align-items:center;gap:10px}
+.soon-note i{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff;animation:blink 1.6s steps(1) infinite}
+
+/* ---------- faq ---------- */
+.faq-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:64px;align-items:start}
+.faq-grid .sec-head{position:sticky;top:130px}
+.faq{display:grid;gap:12px}
+.qa{border-radius:20px;background:var(--s1);border:1px solid var(--line);transition:border-color .3s,background .3s}
+.qa.open{border-color:var(--line2);background:var(--s2)}
+.qa button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 26px;text-align:left;font-family:var(--f-head);font-weight:600;font-size:19px}
+.qa .pm{flex:none;position:relative;width:34px;height:34px;border-radius:50%;border:1px solid var(--line2);transition:background .3s,transform .5s var(--ease)}
+.qa .pm::before,.qa .pm::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1.5px;background:#fff;translate:-50% -50%;transition:transform .5s var(--ease)}
+.qa .pm::after{transform:rotate(90deg)}
+.qa.open .pm{background:#fff;transform:rotate(180deg)}
+.qa.open .pm::before,.qa.open .pm::after{background:#000}
+.qa.open .pm::after{transform:rotate(0)}
+.qa .a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--ease)}
+.qa.open .a{grid-template-rows:1fr}
+.qa .a>div{overflow:hidden}
+.qa .a p{padding:0 26px 26px;color:var(--muted)}
+
+/* ---------- kontakt ---------- */
+.cta-big{font-family:var(--f-display);font-weight:900;font-size:clamp(28px,6.6vw,104px);line-height:1;letter-spacing:-.01em;text-transform:uppercase;text-align:center;margin-bottom:22px}
+.cta-sub{text-align:center;color:var(--muted);font-size:18px;max-width:560px;margin:0 auto 70px}
+.cta-big .fill{display:block;background:linear-gradient(90deg,#fff 0 var(--p,0%),rgba(255,255,255,.12) var(--p,0%) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.contact{display:grid;grid-template-columns:1fr 1.4fr;gap:24px}
+.contact>*,.row>*,.about>*,.faq-grid>*,.hero-grid>*{min-width:0}
+.panel{padding:44px;border-radius:30px;background:var(--s1);border:1px solid var(--line)}
+.panel h3{font-family:var(--f-head);font-weight:700;font-size:32px;line-height:1.12;letter-spacing:-.02em;margin:24px 0 14px}
+.panel>p{color:var(--muted)}
+.contact>.panel:first-child{display:flex;flex-direction:column}
+.direct{margin-top:auto;padding-top:40px;display:grid;gap:12px}
+.direct .btn{width:100%}
+.direct .mail{margin-top:0;border-radius:18px}
+.mail{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:30px;padding:10px 10px 10px 22px;border-radius:999px;border:1px solid var(--line2);background:rgba(255,255,255,.03);font-family:var(--f-mono);font-size:15px;min-width:0}
+.mail a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mail button{flex:none;height:42px;padding:0 18px;border-radius:999px;background:rgba(255,255,255,.08);font-family:var(--f-head);font-weight:600;font-size:14px;transition:background .25s}
+.mail button:hover{background:rgba(255,255,255,.16)}
+.facts{display:grid;gap:14px;margin-top:30px;color:var(--muted);font-size:15px}
+.facts div{display:flex;gap:12px;align-items:center}
+form{display:grid;gap:18px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{display:grid;gap:10px}
+.field label{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.field input,.field textarea{width:100%;font:inherit;font-size:16px;color:var(--text);background:rgba(255,255,255,.035);border:1px solid var(--line2);border-radius:14px;padding:15px 18px;transition:border-color .25s,box-shadow .25s,background .25s;appearance:none}
+.field input::placeholder,.field textarea::placeholder{color:var(--dim)}
+.field textarea{min-height:150px;resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);box-shadow:0 0 0 4px rgba(255,255,255,.06)}
+form .btn{width:100%}
+.form-msg{min-height:1.4em;text-align:center;font-size:15px}
+.form-msg.ok{color:var(--green)}.form-msg.err{color:#f87171}
+
+/* ---------- pätička ---------- */
+footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);margin-top:60px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px 30px;flex-wrap:wrap}
+.foot>span{color:var(--muted);font-size:15px}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:180;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+.modal.open{opacity:1;visibility:visible}
+.modal-box{position:relative;width:min(1120px,100%);transform:scale(.94) translateY(20px);transition:transform .6s var(--ease)}
+.modal.open .modal-box{transform:none}
+.modal-box.short{width:min(420px,100%)}
+.modal iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:20px;background:#000}
+.modal-box.short iframe{aspect-ratio:9/16;max-height:84vh}
+.modal-close{position:absolute;top:-60px;right:0;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;transition:background .25s}
+.modal-close:hover{background:rgba(255,255,255,.2)}
+.modal-close svg{width:18px;height:18px}
+
+/* ---------- responzivita ---------- */
+@media (max-width:1100px){.clients{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:1020px){
+  .soon{grid-template-columns:repeat(2,1fr)}
+  .soon-card:nth-child(3){display:none}
+  .nav-links,.nav .btn{display:none}
+  .burger{display:block}
+  .about{grid-template-columns:1fr;gap:48px}
+  .me{max-width:480px;width:100%;margin:0 auto}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .clients{grid-template-columns:repeat(2,1fr)}
+  .faq-grid{grid-template-columns:1fr;gap:20px}
+  .faq-grid .sec-head{position:static}
+  .contact{grid-template-columns:1fr}
+  .hud{display:none}
+}
+@media (max-width:900px){
+  .hero{padding-top:120px}
+  .hero-grid{grid-template-columns:1fr;text-align:center;gap:0}
+  .hero-3d{width:min(280px,72vw)}
+  .hero-title,.role,.ctas,.chips{justify-content:center}
+  .hero .desc{margin-inline:auto}
+  .hero-title{transform-origin:50% 60%}
+  .tag3d{display:none}
+  .process{padding:110px 0}
+  .process-sticky{position:static;height:auto;display:block}
+  .process-track{flex-direction:column;padding:0 16px;transform:none!important}
+  .p-intro{width:auto;padding:0 0 20px}
+  .p-card{width:auto;height:auto;min-height:280px;gap:40px}
+  .p-progress{display:none}
+  .tile{width:220px}
+}
+@media (max-width:640px){
+  section{padding:96px 0}
+  .soon{grid-template-columns:1fr;margin-top:56px}
+  .soon-card:nth-child(n+2){display:none}
+  .finder{inset:96px 12px 30px}
+  .finder .lbl{display:none}
+  .ctas .btn{width:100%}
+  .chips{flex-direction:column;gap:10px}
+  .clients{display:flex;overflow-x:auto;margin-inline:-16px;padding:4px 16px 8px;scrollbar-width:none}
+  .clients::-webkit-scrollbar{display:none}
+  .ccard{flex:none;width:236px}
+  .sel-r{width:100%;justify-content:space-between}
+  .grid,.services{grid-template-columns:1fr}
+  .stats{gap:12px}
+  .stat{padding:22px 18px!important;min-height:210px;border-radius:22px!important}
+  .stat-top{padding-bottom:22px}
+  .stat-top span{font-size:10.5px;letter-spacing:.1em}
+  .stat-top i{width:34px;height:34px;border-radius:10px;font-size:15px}
+  .stat .lbl{font-size:14px}
+  .live{font-size:10.5px;padding:5px 10px}
+  .svc,.panel{padding:30px 24px}
+  .me-tag{font-size:11px;padding:8px 12px}
+  .me-tag:nth-of-type(3){display:none}
+  .wall-label{font-size:15px;padding:10px 18px 10px 10px}
+  .wall-label i{width:38px;height:38px}
+  .qa button{padding:20px;font-size:17px}
+  .qa .a p{padding:0 20px 20px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important;transition-delay:0ms!important}
+  html{scroll-behavior:auto}
+  [data-reveal],.intro,.hero-title,.rotator span.on{opacity:1!important}
+  .grain{display:none}
+}
+</style>
+</head>
+<body class="loading">
+<div class="bg" aria-hidden="true"><div class="aur a1"></div><div class="bg-grid"></div><div class="bg-spot" id="spot"></div></div>
+
+<div id="loader" aria-hidden="true">
+  <div class="panel top"></div><div class="panel bot"></div>
+  <div class="inner">
+    <div class="brand chrome">ZYFONIX</div>
+    <div class="bar"><i id="loadBar"></i></div>
+    <div class="meta"><span>NAČÍTAVAM</span><span id="loadNum">000</span></div>
+  </div>
+</div>
+
+<div class="timeline" aria-hidden="true"><div class="ticks"></div><div class="fill" id="tlFill"></div><div class="head" id="tlHead"></div></div>
+<div class="hud" id="hud" aria-hidden="true"><span class="rec"><i></i>REC</span><span id="hudSec">ÚVOD</span><span class="tc" id="hudTc">00:00:00:00</span></div>
+<div class="cursor" id="cursor" aria-hidden="true"><span>PREHRAŤ</span></div>
+
+<header class="nav" id="nav">
+  <a href="#top" class="logo" aria-label="ZYFONIX – domov"><span class="logo-mark">Z</span>ZYFONIX</a>
+  <nav class="nav-links" aria-label="Hlavná navigácia">
+    <a href="#o-mne">O mne</a>
+    <a href="#portfolio">Portfólio</a>
+    <a href="#proces">Proces</a>
+    <a href="#sluzby">Služby</a>
+    <a href="#recenzie">Recenzie</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <a href="#kontakt" class="btn btn-primary"><span class="lbl"><span>Spolupráca ↗</span><span>Spolupráca ↗</span></span></a>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+<div class="mmenu" id="mmenu">
+  <a href="#o-mne"><small>01</small>O mne</a>
+  <a href="#portfolio"><small>02</small>Portfólio</a>
+  <a href="#proces"><small>03</small>Proces</a>
+  <a href="#sluzby"><small>04</small>Služby</a>
+  <a href="#faq"><small>05</small>FAQ</a>
+  <a href="#kontakt"><small>06</small>Kontakt</a>
+</div>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero" id="uvod" data-sec="ÚVOD">
+    <div class="finder" aria-hidden="true"><i></i><i></i><i></i><i></i>
+      <span class="lbl tl">4K · 60 FPS</span><span class="lbl tr">ISO 800</span><span class="lbl bl">16:9 / 9:16</span><span class="lbl br" id="heroTc">00:00:00</span>
+    </div>
+    <div class="wrap hero-grid" id="heroInner">
+      <div class="hero-copy">
+        <div class="status intro" style="--d:100ms"><span class="dot"></span>Aktuálne voľné miesto pre 1–2 nových klientov</div>
+        <h1 class="hero-title" id="heroTitle">ZYFONIX</h1>
+        <div class="role intro" style="--d:700ms"><b>Video Editor</b> pre <span class="rotator" id="rotator"><span class="on">tvorcov</span><span>YouTuberov</span><span>influencerov</span><span>streamerov</span></span></div>
+        <p class="desc intro" style="--d:820ms">Tvorím dynamické a kvalitne spracované videá, ktoré zaujmú už od prvých sekúnd. Pútavý strih, správne tempo a detaily, ktoré udržia pozornosť divákov, zvýšia Watch Time a posunú tvoj kanál ďalej.</p>
+        <div class="ctas intro" style="--d:940ms">
+          <a href="#portfolio" class="btn btn-primary" data-magnet><span class="lbl"><span>Pozri moje práce ↓</span><span>Pozri moje práce ↓</span></span></a>
+          <a href="#kontakt" class="btn btn-ghost" data-magnet><span class="lbl"><span>Začať spoluprácu</span><span>Začať spoluprácu</span></span></a>
+        </div>
+        <div class="chips intro" style="--d:1060ms">
+          <span>✓ <b data-count data-key="views">819K+</b> organických videní</span>
+          <span>✓ <b data-count data-key="reach">1.7M+</b> dosah klientov</span>
+          <span>✓ <b>YouTube, Shorts &amp; Reels</b></span>
+        </div>
+      </div>
+      <div class="hero-3d intro" id="hero3d" style="--d:400ms" aria-hidden="true">
+        <div class="orbit"></div>
+        <img class="fallback" src="assets/apple-touch-icon.png" alt="">
+        <span class="tag3d t1">✂️ Premiere Pro</span>
+        <span class="tag3d t2">📈 Watch Time &amp; retencia</span>
+      </div>
+    </div>
+    <div class="scroll-cue intro" style="--d:1300ms" aria-hidden="true"><i></i>SCROLLUJ</div>
+  </section>
+
+  <!-- 3D STENA VIDEÍ -->
+  <div class="wall" id="wall" aria-label="Ukážky videí">
+    <div class="wall-inner" id="wallInner"></div>
+    <a href="#portfolio" class="wall-label" data-hover><i></i><div>16 videí <span>pre 6 tvorcov</span></div></a>
+  </div>
+
+  <!-- KLIENTI -->
+  <div class="trust">
+    <div class="eyebrow">Dôverujú mi poprední CZ/SK tvorcovia</div>
+    <div class="mq"><div class="mq-track" id="mq1"></div></div>
+  </div>
+
+  <!-- O MNE -->
+  <section id="o-mne" data-sec="O MNE">
+    <div class="wrap">
+      <div class="about">
+        <div class="me" id="me" data-reveal>
+          <div class="me-ring"><img src="assets/zyfonix.jpg" alt="Zyfonix" width="400" height="400" loading="lazy"></div>
+          <span class="me-tag">✂️ Premiere Pro</span>
+          <span class="me-tag">📈 Watch Time &amp; retencia</span>
+          <span class="me-tag">🎬 16:9 &amp; 9:16</span>
+          <div class="me-name">ZYFONIX</div>
+        </div>
+        <div>
+          <div class="eyebrow" data-reveal="txt">O mne &amp; výsledky</div>
+          <h2 class="h2" data-reveal="txt">Strih, ktorý udrží divákov pri obrazovke</h2>
+          <p class="words" id="words">Strihu videí sa venujem viac ako rok a mám za sebou spolupráce s väčšími CZ/SK tvorcami. Každý tvorca má vlastný štýl – preto každé video spracujem tak, aby ti sedelo a divákov bavilo sledovať od prvej sekundy až do konca.</p>
+          <ul class="bullets">
+            <li data-reveal><span class="ic" aria-hidden="true">⚡</span><div><b>Silný začiatok</b><span>Prvé sekundy rozhodujú – hook, ktorý upúta pozornosť.</span></div></li>
+            <li data-reveal><span class="ic" aria-hidden="true">🎬</span><div><b>Dynamický strih</b><span>Bez hluchých miest, so správnym tempom až do konca.</span></div></li>
+            <li data-reveal><span class="ic" aria-hidden="true">🤝</span><div><b>Férová spolupráca</b><span>Rýchla komunikácia a úpravy, kým nie si spokojný.</span></div></li>
+          </ul>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat" data-reveal><div class="stat-top"><span>Skúsenosti</span><i>🎬</i></div><div class="num" data-count>1+</div><div class="lbl">rok aktívnych skúseností</div><i class="bar"></i></div>
+        <div class="stat" data-reveal><div class="stat-top"><span>Portfólio</span><i>🎯</i></div><div class="num" data-count>22+</div><div class="lbl">dokončených projektov</div><i class="bar"></i></div>
+        <div class="stat" data-reveal><div class="stat-top"><span>Dosah prác</span><i>👁</i></div><div class="num" data-count data-key="views">819K+</div><div class="lbl">celkových videní na videách</div><span class="live">Denne aktualizované</span><i class="bar"></i></div>
+        <div class="stat" data-reveal><div class="stat-top"><span>Dosah klientov</span><i>👥</i></div><div class="num" data-count data-key="reach">1.7M+</div><div class="lbl">odberateľov u mojich klientov</div><span class="live">Denne aktualizované</span><i class="bar"></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFÓLIO -->
+  <section id="portfolio" data-sec="PORTFÓLIO">
+    <div class="wrap">
+      <div class="sec-head center">
+        <div class="eyebrow" data-reveal="txt">Portfólio</div>
+        <h2 class="h2" data-reveal="txt">Moje práce &amp; klienti</h2>
+        <p class="lead" data-reveal="txt">Vyber si tvorcu nižšie a pozri si ukážky videí, na ktorých som pracoval. Počty odberateľov aj videní sa automaticky aktualizujú podľa YouTube.</p>
+      </div>
+      <div class="clients" id="clients" role="tablist"></div>
+      <div class="sel" id="sel" data-reveal></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <!-- PROCES -->
+  <section class="process" id="proces" data-sec="PROCES">
+    <div class="process-sticky">
+      <div class="process-track" id="procTrack">
+        <div class="p-intro">
+          <div class="eyebrow">Ako to funguje</div>
+          <h2 class="h2" data-reveal="txt">Od záznamu k hotovému videu</h2>
+          <p class="lead">Jednoduchý proces bez starostí – ty točíš, ja sa postarám o zvyšok.</p>
+        </div>
+        <article class="p-card"><span class="tag">KROK 01</span><div class="n">01</div><div><h3>Napíšeš mi</h3><p>Cez formulár, e-mail alebo Instagram. Dohodneme štýl, rozsah a termín.</p></div></article>
+        <article class="p-card"><span class="tag">KROK 02</span><div class="n">02</div><div><h3>Pošleš záznamy</h3><p>Raw zábery mi jednoducho pošleš napríklad cez Google Drive.</p></div></article>
+        <article class="p-card"><span class="tag">KROK 03</span><div class="n">03</div><div><h3>Strihám</h3><p>Shorts väčšinou do 24–48 hodín, dlhšie videá do pár dní podľa dohody.</p></div></article>
+        <article class="p-card"><span class="tag">KROK 04</span><div class="n">04</div><div><h3>Úpravy &amp; hotovo</h3><p>Čokoľvek ti nesedí, upravím – kým nie je video presne podľa tvojich predstáv.</p></div></article>
+      </div>
+      <div class="p-progress" aria-hidden="true"><i id="procBar"></i></div>
+    </div>
+  </section>
+
+  <!-- SLUŽBY -->
+  <section id="sluzby" data-sec="SLUŽBY">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow" data-reveal="txt">Služby</div>
+        <h2 class="h2" data-reveal="txt">Čo ponúkam</h2>
+        <p class="lead" data-reveal="txt">Kompletná postprodukcia prispôsobená tvojmu štýlu a tomu, čo funguje v algoritme.</p>
+      </div>
+      <div class="services">
+        <article class="svc" data-reveal><div class="top"><span class="ic" aria-hidden="true">✂️</span><span class="n">01</span></div><h3>Strih videí</h3><p>Dynamický strih pre Instagram, YouTube a TikTok za účelom maximálneho udržania pozornosti diváka od úvodného hooku až po záver.</p><div class="out">→ Vyšší Watch Time &amp; miera dopozerania</div></article>
+        <article class="svc" data-reveal><div class="top"><span class="ic" aria-hidden="true">🎨</span><span class="n">02</span></div><h3>Color Grading</h3><p>Profesionálna farebná korekcia pre filmový alebo špecifický vizuálny look vašich videí, ktorý odlíši vašu tvorbu od konkurencie.</p><div class="out">→ Prémiový a konzistentný vizuál</div></article>
+        <article class="svc" data-reveal><div class="top"><span class="ic" aria-hidden="true">✨</span><span class="n">03</span></div><h3>Transitions &amp; Efekty</h3><p>Plynulé prechody, dynamické titulky, sound design a vizuálne efekty, ktoré dodajú videu profesionálny spád a energiu.</p><div class="out">→ Žiadne nudné či hluché pasáže</div></article>
+        <article class="svc" data-reveal><div class="top"><span class="ic" aria-hidden="true">🤝</span><span class="n">04</span></div><h3>Spolupráca s influencermi</h3><p>Dlhodobá spolupráca na obsahu s pochopením potrieb algoritmov a publika. Ušetrím ti desiatky hodín pri zachovaní tvojho podpisu.</p><div class="out">→ Viac času na točenie a nové nápady</div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECENZIA -->
+  <section id="recenzie" data-sec="RECENZIE">
+    <div class="wrap">
+      <figure class="review">
+        <div class="eyebrow" data-reveal="txt" style="justify-content:center;margin-bottom:30px">Recenzie</div>
+        <div class="stars" data-reveal="txt" aria-label="5 z 5 hviezdičiek">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg>
+        </div>
+        <blockquote data-reveal="txt">„Kvalitní edit, jsem velmi spokojený. Doporučuji každému, kdo hledá spolehlivého editora!“</blockquote>
+        <figcaption class="who" data-reveal>
+          <img src="assets/avatars/skyf.jpg" alt="" width="58" height="58" loading="lazy">
+          <div><b>Skyf <em>✓ OVERENÁ SPOLUPRÁCA</em></b><span><span data-subs="skyf">132K+</span> odberateľov · YouTube</span></div>
+        </figcaption>
+      </figure>
+      <div class="soon" aria-hidden="true">
+        <div class="soon-card" data-reveal><span class="soon-tag">ČOSKORO</span><div class="soon-stars"><i></i><i></i><i></i><i></i><i></i></div><div class="soon-line" style="width:92%"></div><div class="soon-line" style="width:78%"></div><div class="soon-line" style="width:54%"></div><div class="soon-who"><i></i><span><div class="soon-line" style="width:60%;margin-bottom:8px"></div><div class="soon-line" style="width:40%;margin:0"></div></span></div></div>
+        <div class="soon-card" data-reveal><span class="soon-tag">ČOSKORO</span><div class="soon-stars"><i></i><i></i><i></i><i></i><i></i></div><div class="soon-line" style="width:92%"></div><div class="soon-line" style="width:78%"></div><div class="soon-line" style="width:54%"></div><div class="soon-who"><i></i><span><div class="soon-line" style="width:60%;margin-bottom:8px"></div><div class="soon-line" style="width:40%;margin:0"></div></span></div></div>
+        <div class="soon-card" data-reveal><span class="soon-tag">ČOSKORO</span><div class="soon-stars"><i></i><i></i><i></i><i></i><i></i></div><div class="soon-line" style="width:92%"></div><div class="soon-line" style="width:78%"></div><div class="soon-line" style="width:54%"></div><div class="soon-who"><i></i><span><div class="soon-line" style="width:60%;margin-bottom:8px"></div><div class="soon-line" style="width:40%;margin:0"></div></span></div></div>
+      </div>
+      <p class="soon-note" data-reveal="txt"><i></i>Ďalšie recenzie od klientov sú na ceste – čoskoro pribudnú</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" data-sec="FAQ">
+    <div class="wrap faq-grid">
+      <div class="sec-head">
+        <div class="eyebrow" data-reveal="txt">FAQ</div>
+        <h2 class="h2" data-reveal="txt">Často kladené otázky</h2>
+        <p class="lead" data-reveal="txt">Všetko, čo potrebuješ vedieť predtým, než začneme spolupracovať.</p>
+      </div>
+      <div class="faq">
+        <div class="qa open" data-reveal><button aria-expanded="true">Ako rýchlo dodáš hotové video?<span class="pm"></span></button><div class="a"><div><p>Krátke videá (Shorts) mám väčšinou hotové do 24–48 hodín. Pri dlhších YouTube videách záleží na dĺžke záznamu a náročnosti strihu – väčšinou ich dodám do pár dní, podľa dohody.</p></div></div></div>
+        <div class="qa" data-reveal><button aria-expanded="false">Aké typy videí upravuješ?<span class="pm"></span></button><div class="a"><div><p>IRL videá, gaming, vlogy a ďalšie. Strihám aj krátke videá na YouTube Shorts, Instagram Reels a TikTok. Každé video prispôsobím tvojmu štýlu, aby čo najviac zaujalo tvojich divákov.</p></div></div></div>
+        <div class="qa" data-reveal><button aria-expanded="false">Čo ak budem chcieť vo videu niečo upraviť?<span class="pm"></span></button><div class="a"><div><p>Stačí mi napísať. Úpravy v pohode spravím, aby bolo výsledné video podľa tvojich predstáv.</p></div></div></div>
+        <div class="qa" data-reveal><button aria-expanded="false">Ako prebieha posielanie záznamov a komunikácia?<span class="pm"></span></button><div class="a"><div><p>Komunikovať môžeme cez Instagram alebo e-mail. Raw záznamy mi pošleš napríklad cez Google Drive, potom začnem strihať a priebežne sa dohodneme na detailoch.</p></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KONTAKT -->
+  <section id="kontakt" data-sec="KONTAKT">
+    <div class="wrap">
+      <h2 class="cta-big" id="ctaBig"><span class="fill">Začnime</span><span class="fill">spolupracovať</span></h2>
+      <p class="cta-sub" data-reveal="txt">Chceš posunúť svoje videá na vyšší level? Vyplň krátky dotazník alebo mi napíš priamo správu.</p>
+      <div class="contact">
+        <div class="panel" data-reveal>
+          <div class="status"><span class="dot"></span>Odpovedám zvyčajne do 24 hodín</div>
+          <h3>Poďme vytvoriť niečo veľké</h3>
+          <p>Či už hľadáš editora na jednorazový projekt alebo dlhodobého partnera pre svoj kanál, napíš mi predstavy o svojom projekte a dohodneme detaily.</p>
+          <div class="direct">
+            <a class="btn btn-primary" href="mailto:zyfonix.collab@gmail.com?subject=Spolupr%C3%A1ca%20-%20Dotazn%C3%ADk&amp;body=Ahoj%2C%20m%C3%A1m%20z%C3%A1ujem%20o%20spolupr%C3%A1cu!" data-magnet><span class="lbl"><span>📋 Vyplniť dotazník</span><span>📋 Vyplniť dotazník</span></span></a>
+            <div class="mail"><a href="mailto:zyfonix.collab@gmail.com">zyfonix.collab@gmail.com</a><button id="copy" type="button">Kopírovať</button></div>
+          </div>
+        </div>
+        <div class="panel" data-reveal>
+          <form id="form" action="https://formsubmit.co/ajax/zyfonix.collab@gmail.com" method="POST">
+            <div class="field"><label for="f-name">Meno / kanál</label><input id="f-name" name="meno" placeholder="Tvoje meno alebo názov kanála" required autocomplete="name"></div>
+            <div class="field"><label for="f-mail">Email</label><input id="f-mail" name="email" type="email" placeholder="tvoj@email.sk" required autocomplete="email"></div>
+            <div class="field"><label for="f-msg">Správa</label><textarea id="f-msg" name="sprava" placeholder="Popíš svoj projekt, typ videí alebo predstavu o spolupráci..." required></textarea></div>
+            <input type="hidden" name="_subject" value="Nová správa z portfólia ZYFONIX">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+            <button class="btn btn-primary" type="submit" data-magnet><span class="lbl"><span>Odoslať správu →</span><span>Odoslať správu →</span></span></button>
+            <div class="form-msg" id="formMsg" role="status"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a href="#top" class="logo"><span class="logo-mark">Z</span>ZYFONIX</a>
+    <span>© 2026 Zyfonix. Všetky práva vyhradené.</span>
+  </div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Prehrávač videa">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" id="modalClose" aria-label="Zavrieť"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <iframe id="player" title="YouTube video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+  </div>
+</div>
+
+<script>
+(() => {
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FINE = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const WIDE = () => innerWidth > 900;
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+  window.ZF = { mouse: { x: 0, y: 0 }, scroll: 0 };
+
+  // ---------- dáta: klienti a videá (zoradené podľa odberateľov) ----------
+  const CLIENTS = [
+    { key: 'mgfitman', name: 'MGFitman', subs: '1,08M+', url: 'https://www.youtube.com/@MGFitman', img: 'mgfitman.jpg',
+      videos: [['bgl_agnHtB8', 'Kdo má lepší BICÁK?', 1]] },
+    { key: 'mgfitman_gaming', name: 'MGFitman Gaming', subs: '364K+', url: 'https://www.youtube.com/@MGFitmanGaming', img: 'mgfitman_gaming.jpg',
+      videos: [['DIyRSMtodbk', 'SUPERCELL MĚ SLYŠÍ', 1]] },
+    { key: 'skyf', name: 'Skyf', subs: '132K+', url: 'https://www.youtube.com/@SkyfCS', img: 'skyf.jpg',
+      videos: [
+        ['2RMiRz7Ii-s', 'Otvírám CS2 Caseky dokud mi nepadne KNIFE + drunk stream w/Tynka'],
+        ['KQqVkijipns', 'Takhle jsem získal AK-47 Gold Arabesque za 3 000€'],
+        ['jQnfpU_3w2k', 'Udělal jsem první drunk stream a tohle se stalo...'],
+        ['qNmnKavN0T0', 'Hrál jsem proti FAKE Čechovi?! | Road to 30 000 Elo premier']] },
+    { key: 'twiler', name: 'TwileR', subs: '113K+', url: 'https://www.youtube.com/channel/UCvT293-aCO9EbKaPJM3tA7Q', img: 'twiler.jpg',
+      videos: [
+        ['4Rz7DuQ-DWc', 'Stal som sa ZLODEJOM na MOJEJ PUMPE! (VR)'],
+        ['CEyNgN4ZDEU', 'Pracujem ako NAJHORŠÍ Upratovač v KLUBE! (VR)'],
+        ['hHfmAIHzPbs', '24 Hodín PRANKUJEM Svoju FRAJERKU!'],
+        ['M9prHH3ZEso', 'Postavil som si VYSNÍVANÝ Herný SETUP!'],
+        ['P53UfE47dpA', 'Zasekol Som sa vo VÝŤAHU! (VR)'],
+        ['wGilG9XkTBw', '24 Hodín IGNORUJEM Moju FRAJERKU!'],
+        ['XtgxWVS1Ybc', 'Ak sa Zasmeješ, Musíš Zjesť PÁLIVY CHIPS!'],
+        ['A9ZJPDW3mnU', '24 Hodín Trénujem MMA ale Večer mám ZÁPAS!']] },
+    { key: 'stepsirl', name: 'Štěps IRL', subs: '37,7K+', url: 'https://www.youtube.com/channel/UCuQwP1mNT0Nl0LBu4tSXhgw', img: 'stepsirl.jpg',
+      videos: [['-j67LYV6GyU', 'JAK JSEM KOUPIL PS5 I KDYŽ JE VŠUDE NEDOSTUPNÉ?']] },
+    { key: 'nardosk', name: 'Nardosk', subs: '4,17K+', url: 'https://www.youtube.com/@Nardosk1', img: 'nardosk.jpg',
+      videos: [['0Ai8a5fje-o', 'MAL SOM 24 HODÍN NA TO, ABY SOM ZAŽIL VŠETKO']] },
+  ];
+  const av = c => `assets/avatars/${c.img}`;
+  const ALL = CLIENTS.flatMap(c => c.videos.map(([id, title, short]) => ({ id, title, short: !!short, c })));
+  const VIEWS = {};
+  const thumb = id => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+
+  // ---------- čísla: plynulé napočítavanie (rovnako ako na tvojom webe) ----------
+  const fmtBig = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace('.0', '') + 'M+' : Math.round(n / 1e3) + 'K+';
+  const fmtViews = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace('.0', '') + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'K' : String(n);
+  const subsToNum = s => { const v = parseFloat(s.replace(',', '.')); return /M/i.test(s) ? v * 1e6 : /K/i.test(s) ? v * 1e3 : v; };
+  const projWord = n => n === 1 ? 'projekt' : n >= 2 && n <= 4 ? 'projekty' : 'projektov';
+  function parseNum(text) {
+    const m = text.match(/(\d+(?:[.,]\d+)?)/);
+    if (!m) return null;
+    const raw = m[1], parts = raw.split(/[.,]/);
+    return { pre: text.slice(0, m.index), post: text.slice(m.index + raw.length), val: parseFloat(raw.replace(',', '.')), dec: parts[1] ? parts[1].length : 0, sep: raw.includes(',') ? ',' : '.' };
+  }
+  const counters = new Map();
+  function write(c, text) { c.last = text; c.el.textContent = text; }
+  function run(c, from, dur, delay) {
+    cancelAnimationFrame(c.raf);
+    const t = c.target, t0 = performance.now() + delay;
+    const step = now => {
+      const p = clamp((now - t0) / dur), e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      c.cur = from + (t.val - from) * e;
+      if (p < 1) {
+        const n = c.cur.toFixed(t.dec);
+        write(c, t.pre + (t.sep === ',' ? n.replace('.', ',') : n) + t.post);
+        c.raf = requestAnimationFrame(step);
+      } else {
+        c.raf = 0;
+        write(c, c.text);
+        c.el.classList.remove('settle'); void c.el.offsetWidth; c.el.classList.add('settle');
+      }
+    };
+    c.raf = requestAnimationFrame(step);
+  }
+  // číslo sa napočíta vždy, keď sa ukáže, a na novú hodnotu z YouTube plynule prejde
+  function track(el, dur, delay) {
+    if (!el || RM || counters.has(el)) return;
+    counters.set(el, { el, dur, delay, text: el.textContent, target: parseNum(el.textContent), cur: 0, last: null, shown: false, raf: 0 });
+    el.classList.add('cnt');
+  }
+  function setNum(el, text) {
+    const c = counters.get(el);
+    if (!c) { if (el.textContent !== text) el.textContent = text; return; }
+    if (text === c.text) return;
+    const from = c.raf ? c.cur : (c.target ? c.target.val : 0);
+    c.text = text; c.target = parseNum(text);
+    if (c.shown && c.target) run(c, from, 1200, 0);
+    else if (!c.raf) write(c, text);
+  }
+  function startCounters(root, delay) {
+    const els = [...root.querySelectorAll('.cnt')];
+    if (root.classList.contains('cnt')) els.push(root);
+    els.forEach(el => { const c = counters.get(el); if (!c) return; c.shown = true; if (c.target) run(c, 0, c.dur, c.delay + delay); });
+  }
+  function stopCounters(root) {
+    root.querySelectorAll('.cnt').forEach(el => {
+      const c = counters.get(el);
+      if (!c || !c.shown) return;
+      c.shown = false; cancelAnimationFrame(c.raf); c.raf = 0; write(c, c.text);
+    });
+  }
+  function refreshTotals() {
+    const ids = Object.keys(VIEWS);
+    if (ids.length) {
+      const total = ids.reduce((s, k) => s + VIEWS[k], 0);
+      document.querySelectorAll('[data-key="views"]').forEach(el => setNum(el, fmtBig(Math.max(total, 819000))));
+    }
+    const reach = CLIENTS.reduce((s, c) => s + subsToNum(c.subs), 0);
+    document.querySelectorAll('[data-key="reach"]').forEach(el => setNum(el, fmtBig(reach)));
+  }
+
+  // ---------- reveal: plynulé objavovanie, opakuje sa pri scrolle oboma smermi ----------
+  const io = new IntersectionObserver(es => es.forEach(en => {
+    const el = en.target;
+    if (en.isIntersecting) {
+      if (el.classList.contains('in')) return;
+      el.classList.add('in');
+      startCounters(el, parseInt(el.style.getPropertyValue('--d'), 10) || 0);
+    } else if (el.classList.contains('in')) {
+      el.style.setProperty('--rv', en.boundingClientRect.top < 0 ? '-44px' : '44px');
+      el.classList.remove('in');
+      stopCounters(el);
+    }
+  }), { rootMargin: '0px 0px -6% 0px' });
+  const reveal = el => RM ? el.classList.add('in') : io.observe(el);
+
+  // ---------- 3D stena videí (pohyb rieši prehliadač mimo JavaScriptu, takže je plynulý) ----------
+  const wall = document.getElementById('wall'), wallInner = document.getElementById('wallInner');
+  const shuffled = (arr, seed) => arr.map((v, i) => [Math.abs(Math.sin(i * 99 + seed) * 1e4) % 1, v]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+  [110, 92, 100, 84].forEach((dur, r) => {
+    const html = shuffled(ALL, r + 1).slice(0, 10).map(v => `<button class="tile" data-id="${v.id}" data-short="${v.short}" data-play aria-label="Prehrať: ${esc(v.title)}" tabindex="-1"><img src="${thumb(v.id)}" alt="" loading="lazy" decoding="async"></button>`).join('');
+    const row = document.createElement('div');
+    row.className = r % 2 ? 'wall-row r' : 'wall-row';
+    row.style.setProperty('--dur', dur + 's');
+    row.style.setProperty('--del', -r * 17 + 's');
+    row.innerHTML = html + html;
+    wallInner.append(row);
+  });
+
+  // ---------- marquee klientov ----------
+  const pill = c => `<a class="pill" href="#portfolio" data-k="${c.key}" data-hover><img src="${av(c)}" alt="" width="52" height="52"><b>${esc(c.name)}</b><span data-subs="${c.key}">${c.subs}</span></a>`;
+  const row1 = CLIENTS.map(pill).join('');
+  const mq1 = document.getElementById('mq1');
+  mq1.innerHTML = row1 + row1 + row1;
+  [...mq1.children].slice(CLIENTS.length).forEach(a => { a.setAttribute('aria-hidden', 'true'); a.tabIndex = -1; });
+  // stena a pás klientov sa mimo obrazovky zastavia (šetrí výkon)
+  const pauseIO = new IntersectionObserver(es => es.forEach(en => en.target.classList.toggle('off', !en.isIntersecting)));
+  pauseIO.observe(wall); pauseIO.observe(document.querySelector('.trust'));
+
+  // ---------- portfólio: klienti → vybraný klient → videá ----------
+  const clientsEl = document.getElementById('clients'), sel = document.getElementById('sel'), grid = document.getElementById('grid');
+  const ytIc = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.8 15.1V8.9L15.5 12z"/></svg>';
+  clientsEl.innerHTML =
+    CLIENTS.map((c, i) => `<button class="ccard${i ? '' : ' active'}" role="tab" aria-selected="${!i}" data-k="${c.key}" data-reveal><span class="av"><img src="${av(c)}" alt="" width="50" height="50" loading="lazy"></span><span class="meta"><b>${esc(c.name)}</b><small><span data-subs="${c.key}">${c.subs}</span> odberateľov</small></span><a class="yt" href="${c.url}" target="_blank" rel="noopener" aria-label="YouTube kanál ${esc(c.name)}" onclick="event.stopPropagation()">↗</a><span class="glare"></span></button>`).join('');
+  clientsEl.querySelectorAll('[data-subs]').forEach(el => track(el, 1500, 250));
+
+  const eye = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  function renderSel(k) {
+    sel.querySelectorAll('.cnt').forEach(el => counters.delete(el));
+    const c = CLIENTS.find(x => x.key === k), n = c.videos.length;
+    sel.innerHTML = `<div class="sel-l"><img src="${av(c)}" alt="" width="44" height="44">
+      <div class="sel-name"><span>Vybraný klient:</span> ${esc(c.name)}</div>
+      <span class="sel-badge"><span data-subs="${c.key}">${c.subs}</span> odberateľov</span></div>
+      <div class="sel-r"><span>${n} ${projWord(n)}</span><a href="${c.url}" target="_blank" rel="noopener">${ytIc}YouTube kanál ↗</a></div>`;
+    track(sel.querySelector('.sel-badge [data-subs]'), 1500, 250);
+    if (sel.classList.contains('in')) startCounters(sel, 0);
+  }
+  function renderGrid(k) {
+    grid.querySelectorAll('.card').forEach(c => { io.unobserve(c); c.querySelectorAll('.cnt').forEach(el => counters.delete(el)); });
+    const list = ALL.filter(v => v.c.key === k);
+    grid.innerHTML = list.map((v, i) => `
+      <button class="card" data-reveal style="--d:${Math.min(i, 8) * 80}ms" data-id="${v.id}" data-short="${v.short}" data-play aria-label="Prehrať: ${esc(v.title)}">
+        <div class="thumb"><img src="${thumb(v.id)}" alt="" loading="lazy"><span class="shade"></span>
+          <span class="badge">${v.short ? 'YT SHORT' : 'YOUTUBE'}</span><span class="views" data-views="${v.id}">${VIEWS[v.id] ? eye + `<b class="vn">${fmtViews(VIEWS[v.id])}</b>` : ''}</span><span class="play"><i></i></span></div>
+        <div class="card-body"><h3>${esc(v.title)}</h3><div class="owner"><img src="${av(v.c)}" alt="" width="24" height="24">${esc(v.c.name)} · <span data-subs="${v.c.key}">${v.c.subs}</span></div></div>
+        <span class="glare"></span>
+      </button>`).join('');
+    grid.querySelectorAll('.vn').forEach(el => track(el, 1400, 300));
+    grid.querySelectorAll('.card').forEach(reveal);
+    bindTilt(grid.querySelectorAll('.card'), 10, 8);
+  }
+  function select(k) {
+    clientsEl.querySelectorAll('.ccard').forEach(b => { const on = b.dataset.k === k; b.classList.toggle('active', on); b.setAttribute('aria-selected', on); });
+    grid.querySelectorAll('.card').forEach(c => c.classList.add('leave'));
+    setTimeout(() => { renderSel(k); renderGrid(k); }, 240);
+  }
+  clientsEl.addEventListener('click', e => { const b = e.target.closest('.ccard'); if (b) select(b.dataset.k); });
+  mq1.addEventListener('click', e => { const a = e.target.closest('.pill'); if (a) select(a.dataset.k); });
+  renderSel(CLIENTS[0].key); renderGrid(CLIENTS[0].key);
+
+  function bindTilt(els, ry, rx) {
+    if (!FINE) return;
+    els.forEach(card => {
+      card.addEventListener('pointermove', e => {
+        const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        card.style.setProperty('--ry', ((x - .5) * ry).toFixed(2) + 'deg');
+        card.style.setProperty('--rx', ((.5 - y) * rx).toFixed(2) + 'deg');
+        card.style.setProperty('--gx', x * 100 + '%');
+        card.style.setProperty('--gy', y * 100 + '%');
+      });
+      card.addEventListener('pointerleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+    });
+  }
+  bindTilt(clientsEl.querySelectorAll('.ccard'), 12, 12);
+  bindTilt([document.getElementById('me')], 10, 10);
+  // jemné 3D naklonenie kariet podľa myši
+  bindTilt(document.querySelectorAll('.svc'), 8, 8);
+  bindTilt(document.querySelectorAll('.stat'), 12, 12);
+  bindTilt(document.querySelectorAll('.p-card'), 10, 10);
+
+  // ---------- prehrávač ----------
+  const lock = on => document.documentElement.classList.toggle('lock', on);
+  const modal = document.getElementById('modal'), player = document.getElementById('player'), box = document.getElementById('modalBox');
+  document.addEventListener('click', e => {
+    const c = e.target.closest('.card, .tile'); if (!c) return;
+    box.classList.toggle('short', c.dataset.short === 'true');
+    player.src = `https://www.youtube-nocookie.com/embed/${c.dataset.id}?autoplay=1&rel=0`;
+    modal.classList.add('open'); lock(true);
+    document.getElementById('modalClose').focus();
+  });
+  function closeModal() {
+    modal.classList.remove('open'); lock(false);
+    setTimeout(() => { player.src = ''; }, 400);
+  }
+  document.getElementById('modalClose').onclick = closeModal;
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+  // ---------- hero: chrómový nadpis s leskom + rotujúce slovo ----------
+  const ht = document.getElementById('heroTitle');
+  setInterval(() => {
+    if (!RM && !document.hidden && scrollY < innerHeight && document.body.classList.contains('ready')) ht.classList.toggle('alt');
+  }, 9000);
+  const rotEl = document.getElementById('rotator'), rot = [...rotEl.children];
+  // šírka sa plynulo prispôsobí práve zobrazenému slovu (bez medzery pred kratšími slovami)
+  const fitRot = () => { const on = rotEl.querySelector('.on'); if (on) rotEl.style.width = on.offsetWidth + 'px'; };
+  fitRot(); if (document.fonts) document.fonts.ready.then(fitRot);
+  addEventListener('resize', fitRot);
+  let ri = 0;
+  setInterval(() => {
+    if (document.hidden || RM) return;
+    const cur = rot[ri]; ri = (ri + 1) % rot.length; const nx = rot[ri];
+    cur.classList.replace('on', 'out');
+    nx.classList.remove('out'); nx.classList.add('on');
+    fitRot();
+  }, 2600);
+
+  // ---------- text v sekcii O mne sa rozsvecuje po slovách ----------
+  const words = document.getElementById('words');
+  words.innerHTML = words.textContent.trim().split(/\s+/).map(w => `<span class="wd">${esc(w)}</span> `).join('');
+  const wds = [...words.querySelectorAll('.wd')];
+
+  // ---------- spustenie revealov a čísel ----------
+  document.querySelectorAll('.chips [data-count]').forEach(el => track(el, 1800, 0));
+  document.querySelectorAll('.stat [data-count]').forEach(el => track(el, 2000, 150));
+  document.querySelectorAll('.who [data-subs]').forEach(el => track(el, 1500, 250));
+  const groups = new Map();
+  document.querySelectorAll('[data-reveal]:not(.card)').forEach(el => {
+    const i = groups.get(el.parentElement) || 0;
+    groups.set(el.parentElement, i + 1);
+    el.style.setProperty('--d', Math.min(i, 6) * 90 + 'ms');
+    reveal(el);
+  });
+
+  // ---------- odkazy: natívny plynulý scroll (rovnako plynulý ako na tvojom webe) ----------
+  const nav = document.getElementById('nav'), burger = document.getElementById('burger');
+  const goTo = target => scrollTo({ top: target === 0 ? 0 : target.getBoundingClientRect().top + scrollY - 80, behavior: RM ? 'auto' : 'smooth' });
+  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    const t = id === '#top' ? 0 : document.querySelector(id);
+    if (t === null) return;
+    e.preventDefault();
+    document.body.classList.remove('menu-open'); burger.setAttribute('aria-expanded', false); lock(false);
+    goTo(t);
+  }));
+  burger.onclick = () => {
+    const o = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', o);
+    lock(o);
+  };
+  const links = [...document.querySelectorAll('.nav-links a')];
+
+  // ---------- kurzor, magnet, svetlo (počíta sa len pri pohybe myši) ----------
+  const cursor = document.getElementById('cursor'), spot = document.getElementById('spot');
+  let mx = innerWidth / 2, my = innerHeight / 3, cx = mx, cy = my, sx = mx, sy = my, mLoop = false;
+  spot.style.transform = `translate3d(${sx}px,${sy}px,0)`;
+  function mouseLoop() {
+    cx += (mx - cx) * .2; cy += (my - cy) * .2; sx += (mx - sx) * .06; sy += (my - sy) * .06;
+    cursor.style.transform = `translate3d(${cx.toFixed(1)}px,${cy.toFixed(1)}px,0)`;
+    spot.style.transform = `translate3d(${sx.toFixed(1)}px,${sy.toFixed(1)}px,0)`;
+    if (Math.abs(mx - sx) + Math.abs(my - sy) > .6) requestAnimationFrame(mouseLoop); else mLoop = false;
+  }
+  addEventListener('pointermove', e => {
+    mx = e.clientX; my = e.clientY; cursor.classList.add('on');
+    ZF.mouse.x = mx / innerWidth * 2 - 1; ZF.mouse.y = my / innerHeight * 2 - 1;
+    if (!mLoop) { mLoop = true; requestAnimationFrame(mouseLoop); }
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => cursor.classList.remove('on'));
+  if (FINE) {
+    document.addEventListener('pointerover', e => {
+      const play = !!e.target.closest('[data-play]');
+      cursor.classList.toggle('play', play);
+      cursor.classList.toggle('hover', !play && !!e.target.closest('a,button,[data-hover],input,textarea,select'));
+    });
+    document.querySelectorAll('[data-magnet], .nav .btn').forEach(el => {
+      el.addEventListener('pointermove', e => {
+        const r = el.getBoundingClientRect();
+        el.style.translate = `${(e.clientX - r.left - r.width / 2) * .25}px ${(e.clientY - r.top - r.height / 2) * .35}px`;
+      });
+      el.addEventListener('pointerleave', () => { el.style.transition = 'translate .6s cubic-bezier(.16,1,.3,1),box-shadow .3s,border-color .3s'; el.style.translate = '0 0'; });
+      el.addEventListener('pointerenter', () => { el.style.transition = 'translate .15s linear,box-shadow .3s,border-color .3s'; });
+    });
+    document.querySelectorAll('.svc').forEach(el => el.addEventListener('pointermove', e => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', e.clientX - r.left + 'px'); el.style.setProperty('--my', e.clientY - r.top + 'px');
+    }));
+  }
+
+  // ---------- scrollom riadené efekty – počítajú sa len pri scrolle, nie v každom snímku ----------
+  const tlFill = document.getElementById('tlFill'), tlHead = document.getElementById('tlHead');
+  const hud = document.getElementById('hud'), hudSec = document.getElementById('hudSec'), hudTc = document.getElementById('hudTc'), heroTc = document.getElementById('heroTc');
+  const heroInner = document.getElementById('heroInner');
+  const proc = document.getElementById('proces'), procTrack = document.getElementById('procTrack'), procBar = document.getElementById('procBar');
+  const ctaBig = document.getElementById('ctaBig');
+  const secs = [...document.querySelectorAll('[data-sec]')];
+  let lastNavY = scrollY, procExtra = 0, lastLit = -1, lastCp = -1, heroDone = false, ticking = false;
+
+  function sizeProcess() {
+    if (WIDE() && !RM) { procExtra = Math.max(0, procTrack.scrollWidth - innerWidth); proc.style.height = innerHeight + procExtra + 'px'; }
+    else { procExtra = 0; proc.style.height = ''; procTrack.style.transform = ''; }
+  }
+  // pozície sa merajú len pri zmene rozmerov
+  const L = {};
+  function measure() {
+    const Y = scrollY, top = el => el.getBoundingClientRect().top + Y;
+    L.secs = secs.map(top);
+    L.wallT = top(wall); L.wallH = wall.offsetHeight;
+    L.wordsT = top(words); L.wordsH = words.offsetHeight;
+    L.procT = top(proc); L.procH = proc.offsetHeight;
+    L.ctaT = top(ctaBig);
+    L.max = document.documentElement.scrollHeight - innerHeight;
+  }
+  const tc = sec => { const f = Math.floor(sec * 25) % 25, s = Math.floor(sec) % 60, m = Math.floor(sec / 60) % 60, h = Math.floor(sec / 3600); return [h, m, s, f].map(n => String(n).padStart(2, '0')).join(':'); };
+
+  function update() {
+    ticking = false;
+    const y = scrollY, ih = innerHeight, p = L.max > 0 ? clamp(y / L.max) : 0;
+    ZF.scroll = y;
+    tlFill.style.transform = `scaleX(${p.toFixed(4)})`;
+    tlHead.style.transform = `translate3d(${(p * (innerWidth - 2)).toFixed(1)}px,0,0)`;
+    hudTc.textContent = tc(p * 180);
+    hud.style.opacity = p > .96 ? 0 : 1;
+    let cur = secs[0];
+    secs.forEach((s, i) => { if (L.secs[i] - y < ih * .45) cur = s; });
+    if (hudSec.textContent !== cur.dataset.sec) {
+      hudSec.textContent = cur.dataset.sec;
+      links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur.id));
+    }
+    if (Math.abs(y - lastNavY) > 8) { nav.classList.toggle('hide', y > lastNavY && y > 300 && !document.body.classList.contains('menu-open')); lastNavY = y; }
+    if (RM) return;
+
+    // úvod sa pri scrolle jemne posúva a stráca
+    if (y < ih * 1.2 || !heroDone) {
+      const hy = Math.min(y, ih);
+      heroInner.style.transform = `translate3d(0,${(hy * .3).toFixed(1)}px,0)`;
+      heroInner.style.opacity = clamp(1 - hy / (ih * .85)).toFixed(3);
+      heroDone = y >= ih * 1.2;
+    }
+    // 3D stena sa pri scrolle vyrovnáva
+    const wTop = L.wallT - y;
+    if (wTop + L.wallH > 0 && wTop < ih) {
+      const wp = clamp((ih - wTop) / (ih + L.wallH));
+      wallInner.style.transform = `translate(-25%,-50%) rotateX(${(38 - wp * 24).toFixed(2)}deg) rotateZ(${(-14 + wp * 8).toFixed(2)}deg) scale(${(1.05 + wp * .15).toFixed(4)})`;
+    }
+    const lit = Math.round(clamp((ih * .85 - (L.wordsT - y)) / (L.wordsH + ih * .4)) * wds.length);
+    if (lit !== lastLit) { wds.forEach((w, i) => w.classList.toggle('lit', i < lit)); lastLit = lit; }
+    if (procExtra) {
+      const pp = clamp(-(L.procT - y) / (L.procH - ih));
+      procTrack.style.transform = `translate3d(${(-pp * procExtra).toFixed(1)}px,0,0)`;
+      procBar.style.transform = `scaleX(${pp.toFixed(4)})`;
+    }
+    const cp = Math.round(clamp((ih - (L.ctaT - y)) / (ih * .7)) * 200) / 200;
+    if (cp !== lastCp) { ctaBig.querySelectorAll('.fill').forEach((f, i) => f.style.setProperty('--p', clamp(cp * 1.4 - i * .3) * 100 + '%')); lastCp = cp; }
+  }
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  let mPending = false;
+  const remeasure = () => { if (!mPending) { mPending = true; requestAnimationFrame(() => { mPending = false; sizeProcess(); measure(); update(); }); } };
+  new ResizeObserver(remeasure).observe(document.body);
+  addEventListener('resize', remeasure); addEventListener('load', remeasure);
+  sizeProcess(); measure(); update();
+  if (RM) {
+    wds.forEach(w => w.classList.add('lit'));
+    ctaBig.querySelectorAll('.fill').forEach(f => f.style.setProperty('--p', '100%'));
+  }
+
+  // časový kód v rohu úvodu (len keď je úvod na obrazovke)
+  let heroOn = true;
+  new IntersectionObserver(([e]) => { heroOn = e.isIntersecting; }).observe(document.getElementById('uvod'));
+  const t0 = performance.now();
+  setInterval(() => { if (heroOn && !document.hidden) heroTc.textContent = tc((performance.now() - t0) / 1000).slice(3); }, 40);
+
+  // ---------- FAQ ----------
+  document.querySelectorAll('.qa button').forEach(b => b.addEventListener('click', () => {
+    const qa = b.parentElement, open = !qa.classList.contains('open');
+    document.querySelectorAll('.qa').forEach(q => { q.classList.remove('open'); q.querySelector('button').setAttribute('aria-expanded', false); });
+    if (open) { qa.classList.add('open'); b.setAttribute('aria-expanded', true); }
+  }));
+
+  // ---------- kontakt ----------
+  document.getElementById('copy').onclick = async e => {
+    try { await navigator.clipboard.writeText('zyfonix.collab@gmail.com'); e.target.textContent = 'Skopírované ✓'; }
+    catch { e.target.textContent = 'Nepodarilo sa'; }
+    setTimeout(() => e.target.textContent = 'Kopírovať', 2000);
+  };
+  const form = document.getElementById('form'), msg = document.getElementById('formMsg');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type=submit] .lbl'), label = btn.innerHTML;
+    btn.innerHTML = '<span>Odosielam…</span><span>Odosielam…</span>'; msg.className = 'form-msg'; msg.textContent = '';
+    const fd = new FormData(form);
+    // záloha: otvorí e-mail s už vyplnenou správou, aby sa správa nikdy nestratila
+    const viaMail = () => {
+      const body = `${fd.get('sprava')}\n\n— ${fd.get('meno')} (${fd.get('email')})`;
+      location.href = `mailto:zyfonix.collab@gmail.com?subject=${encodeURIComponent('Spolupráca – ' + fd.get('meno'))}&body=${encodeURIComponent(body)}`;
+    };
+    try {
+      // súbor otvorený priamo z počítača (file://) formulár odoslať nevie – funguje až na zverejnenom webe
+      if (location.protocol === 'file:') throw 'file';
+      fd.set('_replyto', fd.get('email') || '');
+      const r = await fetch(form.action, { method: 'POST', body: fd, headers: { Accept: 'application/json' } });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && (j.success === true || j.success === 'true')) {
+        form.reset(); msg.className = 'form-msg ok'; msg.textContent = 'Správa odoslaná! Ozvem sa ti zvyčajne do 24 hodín.';
+      } else if (/activ/i.test(j.message || '')) {
+        msg.className = 'form-msg ok'; msg.textContent = 'Správa je na ceste – formulár sa práve aktivuje. Ozvem sa ti čoskoro.';
+      } else throw 'fail';
+    } catch {
+      msg.className = 'form-msg err'; msg.textContent = 'Formulár sa nepodarilo odoslať – otváram e-mail s tvojou správou, stačí ho odoslať.';
+      setTimeout(viaMail, 700);
+    }
+    btn.innerHTML = label;
+  });
+
+  // ---------- živé dáta z YouTube ----------
+  function applySubs(map) {
+    CLIENTS.forEach(c => { if (map[c.key]) c.subs = map[c.key]; });
+    document.querySelectorAll('[data-subs]').forEach(el => { const c = CLIENTS.find(x => x.key === el.dataset.subs); if (c) setNum(el, c.subs); });
+    refreshTotals();
+  }
+  function applyViews() {
+    document.querySelectorAll('[data-views]').forEach(el => {
+      const n = VIEWS[el.dataset.views]; if (!n) return;
+      const b = el.querySelector('.vn');
+      if (b) { setNum(b, fmtViews(n)); return; }
+      el.innerHTML = eye + `<b class="vn">${fmtViews(n)}</b>`;
+      const nb = el.querySelector('.vn'), card = el.closest('.card');
+      track(nb, 1400, 300);
+      if (card && card.classList.contains('in')) startCounters(nb, 0);
+    });
+    refreshTotals();
+  }
+  // odberatelia – subs.json denne aktualizuje GitHub Actions
+  fetch('subs.json?d=' + new Date().toISOString().slice(0, 10)).then(r => r.ok ? r.json() : null).then(d => d && d.subs && applySubs(d.subs)).catch(() => {});
+  // videnia – uložené na 24 hodín, potom sa stiahnu znova
+  const cache = store.get('zf_views_v1');
+  if (cache && cache.v) { Object.assign(VIEWS, cache.v); applyViews(); }
+  if (!cache || Date.now() - cache.t > 864e5) {
+    Promise.allSettled(ALL.map(v => fetch(`https://returnyoutubedislikeapi.com/votes?videoId=${v.id}`).then(r => r.json()).then(d => { if (d && d.viewCount) VIEWS[v.id] = d.viewCount; })))
+      .then(() => { if (Object.keys(VIEWS).length) { store.set('zf_views_v1', { t: Date.now(), v: VIEWS }); applyViews(); } });
+  }
+  refreshTotals();
+
+  // ---------- loader ----------
+  const loader = document.getElementById('loader'), loadNum = document.getElementById('loadNum'), loadBar = document.getElementById('loadBar');
+  let finished = false;
+  function finish() {
+    if (finished) return;
+    finished = true;
+    loader.classList.add('done');
+    document.body.classList.remove('loading');
+    setTimeout(() => {
+      document.body.classList.add('ready');
+      startCounters(document.querySelector('.chips'), 900);
+    }, RM ? 0 : 350);
+    setTimeout(() => loader.remove(), 1400);
+  }
+  if (RM) finish();
+  else {
+    const L0 = performance.now(), LD = 1300;
+    (function load(now) {
+      const p = clamp((now - L0) / LD), e = 1 - Math.pow(1 - p, 3);
+      loadNum.textContent = String(Math.round(e * 100)).padStart(3, '0');
+      loadBar.style.transform = `scaleX(${e})`;
+      if (p < 1) requestAnimationFrame(load); else setTimeout(finish, 180);
+    })(L0);
+    setTimeout(finish, 2600); // poistka, keby prehliadač pozdržal animácie (napr. karta na pozadí)
+  }
+})();
+</script>
+
+<!-- 3D chrómové logo (three.js) -->
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const box = document.getElementById('hero3d');
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let renderer = null;
+try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' }); } catch (e) {}
+
+if (renderer) {
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.25));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  box.prepend(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
+  camera.position.set(0, 0, 7.2);
+
+  // dlaždica loga: zaoblený štvorec s prerezaným „Z“ (ako ikona na webe)
+  const s = 1.15, r = 0.42;
+  const plate = new THREE.Shape();
+  plate.moveTo(-s + r, -s);
+  plate.lineTo(s - r, -s); plate.quadraticCurveTo(s, -s, s, -s + r);
+  plate.lineTo(s, s - r); plate.quadraticCurveTo(s, s, s - r, s);
+  plate.lineTo(-s + r, s); plate.quadraticCurveTo(-s, s, -s, s - r);
+  plate.lineTo(-s, -s + r); plate.quadraticCurveTo(-s, -s, -s + r, -s);
+  const zPts = [[-0.62, 0.62], [0.62, 0.62], [0.62, 0.38], [-0.24, -0.38], [0.62, -0.38], [0.62, -0.62], [-0.62, -0.62], [-0.62, -0.38], [0.24, 0.38], [-0.62, 0.38]];
+  plate.holes.push(new THREE.Path(zPts.map(([x, y]) => new THREE.Vector2(x, y)).reverse()));
+  const geo = new THREE.ExtrudeGeometry(plate, { depth: 0.42, bevelEnabled: true, bevelThickness: 0.09, bevelSize: 0.07, bevelSegments: 8, curveSegments: 32 });
+  geo.center();
+  const chrome = new THREE.MeshPhysicalMaterial({ color: 0xf4f4f7, metalness: 1, roughness: 0.14, clearcoat: 1, clearcoatRoughness: 0.06 });
+  const logo = new THREE.Mesh(geo, chrome);
+
+  // tmavé „Z“ vložené do otvoru
+  const zGeo = new THREE.ExtrudeGeometry(new THREE.Shape(zPts.map(([x, y]) => new THREE.Vector2(x, y))), { depth: 0.3, bevelEnabled: false });
+  zGeo.center();
+  const zMesh = new THREE.Mesh(zGeo, new THREE.MeshStandardMaterial({ color: 0x0c0c10, metalness: 0.6, roughness: 0.35 }));
+  const group = new THREE.Group();
+  group.add(logo, zMesh);
+  scene.add(group);
+
+  // chrómové prstence a iskry
+  const ringMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 1, roughness: 0.2 });
+  const ring1 = new THREE.Mesh(new THREE.TorusGeometry(2.05, 0.018, 24, 220), ringMat);
+  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.01, 24, 220), new THREE.MeshBasicMaterial({ color: 0x2f8cff, transparent: true, opacity: 0.55 }));
+  ring1.rotation.x = 1.25; ring2.rotation.x = 1.45; ring2.rotation.y = 0.5;
+  scene.add(ring1, ring2);
+  const N = 260, pos = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) {
+    const rr = 2.2 + Math.random() * 1.6, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
+    pos[i * 3] = rr * Math.sin(ph) * Math.cos(th); pos[i * 3 + 1] = rr * Math.sin(ph) * Math.sin(th) * .6; pos[i * 3 + 2] = rr * Math.cos(ph);
+  }
+  const pal = [0xffffff, 0xffffff, 0xffffff, 0x9cc8ff, 0x2f8cff].map(h => new THREE.Color(h)), col = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) pal[i % 5].toArray(col, i * 3);
+  const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); pGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  const sparks = new THREE.Points(pGeo, new THREE.PointsMaterial({ vertexColors: true, size: 0.034, transparent: true, opacity: 0.7, depthWrite: false }));
+  scene.add(sparks);
+
+  const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(3, 4, 5); scene.add(key);
+  const rim = new THREE.DirectionalLight(0x1e6bff, 2.4); rim.position.set(-4, -2, -3); scene.add(rim);
+  const rim2 = new THREE.PointLight(0x2f8cff, 16, 12); rim2.position.set(3.2, -1.6, 2.2); scene.add(rim2);
+  const rim3 = new THREE.PointLight(0xffffff, 6, 12); rim3.position.set(-3, 2.4, 2); scene.add(rim3);
+
+  function resize() {
+    const w = box.clientWidth, h = box.clientHeight;
+    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+  resize(); addEventListener('resize', resize);
+
+  let visible = true, intro = 0, rx = 0, ry = 0;
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(box);
+  const clock = new THREE.Clock();
+  function tick() {
+    requestAnimationFrame(tick);
+    if (!visible || document.hidden) return;
+    const t = clock.getElapsedTime();
+    if (document.body.classList.contains('ready')) intro = Math.min(1, intro + 0.012);
+    const ei = 1 - Math.pow(1 - intro, 4);
+    const m = window.ZF ? ZF.mouse : { x: 0, y: 0 }, sc = window.ZF ? ZF.scroll : 0;
+    rx += ((RM ? 0 : m.y * 0.35) - rx) * 0.06;
+    ry += ((RM ? 0 : m.x * 0.6) - ry) * 0.06;
+    group.rotation.x = rx + Math.sin(t * 0.6) * 0.08 + sc * 0.0012;
+    group.rotation.y = ry + (RM ? 0 : Math.sin(t * 0.45) * 0.45) + (1 - ei) * 3.2 + sc * 0.003;
+    group.position.y = Math.sin(t * 1.1) * 0.08;
+    group.scale.setScalar(0.3 + 0.7 * ei);
+    ring1.rotation.z = t * 0.25; ring2.rotation.z = -t * 0.18;
+    ring1.scale.setScalar(0.6 + 0.4 * ei); ring2.scale.setScalar(0.6 + 0.4 * ei);
+    sparks.rotation.y = t * 0.05; sparks.material.opacity = 0.7 * ei;
+    renderer.render(scene, camera);
+  }
+  tick();
+  box.classList.add('gl');
+}
+</script>
+</body>
+</html>
