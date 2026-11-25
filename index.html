@@ -961,7 +961,9 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
   const ALL = CLIENTS.flatMap(c => c.videos.map(([id, title, short]) => ({ id, title, short: !!short, c })));
   const VIEWS = {};
   const isTT = id => /^\d+$/.test(id); // TikTok ID je len číselné, YouTube nikdy
-  const thumb = id => isTT(id) ? `assets/thumbs/${id}.jpg` : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+  // shorty (YT aj TikTok) majú vlastný náhľad s najlepším záberom v assets/thumbs/<id>.jpg
+  const LOCAL_THUMB = new Set(ALL.filter(v => v.short).map(v => v.id));
+  const thumb = id => LOCAL_THUMB.has(id) ? `assets/thumbs/${id}.jpg` : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 
   // ---------- čísla: plynulé napočítavanie (rovnako ako na tvojom webe) ----------
   const fmtBig = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace('.0', '') + 'M+' : Math.round(n / 1e3) + 'K+';
