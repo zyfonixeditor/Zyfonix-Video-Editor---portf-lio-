@@ -726,7 +726,7 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
   <!-- 3D STENA VIDEÍ -->
   <div class="wall" id="wall" aria-label="Ukážky videí">
     <div class="wall-inner" id="wallInner"></div>
-    <a href="#portfolio" class="wall-label" data-hover><i></i><div>16 videí <span>pre 6 tvorcov</span></div></a>
+    <a href="#portfolio" class="wall-label" data-hover><i></i><div id="wallCount">20 videí <span>pre 9 tvorcov</span></div></a>
   </div>
 
   <!-- KLIENTI -->
@@ -753,7 +753,7 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
       </ul>
       <div class="stats">
         <div class="stat" data-reveal><div class="stat-top"><span>Skúsenosti</span><i>🎬</i></div><div class="num" data-count>1+</div><div class="lbl">rok aktívnych skúseností</div><i class="bar"></i></div>
-        <div class="stat" data-reveal><div class="stat-top"><span>Portfólio</span><i>🎯</i></div><div class="num" data-count>22+</div><div class="lbl">dokončených projektov</div><i class="bar"></i></div>
+        <div class="stat" data-reveal><div class="stat-top"><span>Portfólio</span><i>🎯</i></div><div class="num" data-count>26+</div><div class="lbl">dokončených projektov</div><i class="bar"></i></div>
         <div class="stat" data-reveal><div class="stat-top"><span>Dosah prác</span><i>👁</i></div><div class="num" data-count data-key="views">819K+</div><div class="lbl">celkových videní na videách</div><span class="live">Denne aktualizované</span><i class="bar"></i></div>
         <div class="stat" data-reveal><div class="stat-top"><span>Dosah klientov</span><i>👥</i></div><div class="num" data-count data-key="reach">1.7M+</div><div class="lbl">odberateľov u mojich klientov</div><span class="live">Denne aktualizované</span><i class="bar"></i></div>
       </div>
@@ -946,15 +946,22 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
         ['wGilG9XkTBw', '24 Hodín IGNORUJEM Moju FRAJERKU!'],
         ['XtgxWVS1Ybc', 'Ak sa Zasmeješ, Musíš Zjesť PÁLIVY CHIPS!'],
         ['A9ZJPDW3mnU', '24 Hodín Trénujem MMA ale Večer mám ZÁPAS!']] },
+    { key: 'mgfitman_roblox', name: 'MGFitman Roblox', subs: '53,7K+', url: 'https://www.youtube.com/@MGFitmanRoblox', img: 'mgfitman_roblox.jpg',
+      videos: [['iI_Ss-_Pevk', 'Pokácel jsem CELÝ LES za 1 hodinu?! (Roblox Chop a Forest)']] },
     { key: 'stepsirl', name: 'Štěps IRL', subs: '37,7K+', url: 'https://www.youtube.com/channel/UCuQwP1mNT0Nl0LBu4tSXhgw', img: 'stepsirl.jpg',
-      videos: [['-j67LYV6GyU', 'JAK JSEM KOUPIL PS5 I KDYŽ JE VŠUDE NEDOSTUPNÉ?']] },
+      videos: [['djZhQva8Svw', 'UTRATIL JSEM 50 000KČ ABYCH MOHL HRÁT GTA 6...'], ['-j67LYV6GyU', 'JAK JSEM KOUPIL PS5 I KDYŽ JE VŠUDE NEDOSTUPNÉ?']] },
+    { key: 'shrnuto', name: 'Shrnuto', subs: '22,1K+', url: 'https://www.youtube.com/@Shrnuto', img: 'shrnuto.jpg',
+      videos: [['jU9bLMsNnY0', 'Nejhorší věci, které kdy Bart Simpson udělal']] },
+    { key: 'drago_hauls', name: 'drago_hauls', subs: '18,5K+', url: 'https://www.tiktok.com/@drago_hauls', img: 'drago_hauls.jpg', tt: true,
+      videos: [['7711742690643168551', 'Arcteryx je na peaku tuhle zimu 🧥', 1]] },
     { key: 'nardosk', name: 'Nardosk', subs: '4,17K+', url: 'https://www.youtube.com/@Nardosk1', img: 'nardosk.jpg',
       videos: [['0Ai8a5fje-o', 'MAL SOM 24 HODÍN NA TO, ABY SOM ZAŽIL VŠETKO']] },
   ];
   const av = c => `assets/avatars/${c.img}`;
   const ALL = CLIENTS.flatMap(c => c.videos.map(([id, title, short]) => ({ id, title, short: !!short, c })));
   const VIEWS = {};
-  const thumb = id => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+  const isTT = id => /^\d+$/.test(id); // TikTok ID je len číselné, YouTube nikdy
+  const thumb = id => isTT(id) ? `assets/thumbs/${id}.jpg` : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 
   // ---------- čísla: plynulé napočítavanie (rovnako ako na tvojom webe) ----------
   const fmtBig = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace('.0', '') + 'M+' : Math.round(n / 1e3) + 'K+';
@@ -1044,10 +1051,11 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
   // ---------- 3D stena videí (pohyb rieši prehliadač mimo JavaScriptu, takže je plynulý) ----------
   const wall = document.getElementById('wall'), wallInner = document.getElementById('wallInner');
   const shuffled = (arr, seed) => arr.map((v, i) => [Math.abs(Math.sin(i * 99 + seed) * 1e4) % 1, v]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
-  // 2 rady po 8 rôznych videí – na obrazovke sa nič neopakuje
-  const mix = shuffled(ALL, 7);
+  // 2 rady, každé video práve raz – na obrazovke sa nič neopakuje
+  const mix = shuffled(ALL, 7), half = Math.ceil(ALL.length / 2);
+  document.getElementById('wallCount').innerHTML = `${ALL.length} videí <span>pre ${CLIENTS.length} tvorcov</span>`;
   [80, 68].forEach((dur, r) => {
-    const html = mix.slice(r * 8, r * 8 + 8).map(v => `<button class="tile" data-id="${v.id}" data-short="${v.short}" data-play aria-label="Prehrať: ${esc(v.title)}" tabindex="-1"><img src="${thumb(v.id)}" alt="" loading="lazy" decoding="async"></button>`).join('');
+    const html = mix.slice(r * half, r * half + half).map(v => `<button class="tile" data-id="${v.id}" data-short="${v.short}" data-play aria-label="Prehrať: ${esc(v.title)}" tabindex="-1"><img src="${thumb(v.id)}" alt="" loading="lazy" decoding="async"></button>`).join('');
     const row = document.createElement('div');
     row.className = r % 2 ? 'wall-row r' : 'wall-row';
     row.style.setProperty('--dur', dur + 's');
@@ -1070,7 +1078,7 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
   const clientsEl = document.getElementById('clients'), sel = document.getElementById('sel'), grid = document.getElementById('grid');
   const ytIc = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.8 15.1V8.9L15.5 12z"/></svg>';
   clientsEl.innerHTML =
-    CLIENTS.map((c, i) => `<button class="ccard${i ? '' : ' active'}" role="tab" aria-selected="${!i}" data-k="${c.key}" data-reveal><span class="av"><img src="${av(c)}" alt="" width="50" height="50" loading="lazy"></span><span class="meta"><b>${esc(c.name)}</b><small><span data-subs="${c.key}">${c.subs}</span> odberateľov</small></span><a class="yt" href="${c.url}" target="_blank" rel="noopener" aria-label="YouTube kanál ${esc(c.name)}" onclick="event.stopPropagation()">↗</a><span class="glare"></span></button>`).join('');
+    CLIENTS.map((c, i) => `<button class="ccard${i ? '' : ' active'}" role="tab" aria-selected="${!i}" data-k="${c.key}" data-reveal><span class="av"><img src="${av(c)}" alt="" width="50" height="50" loading="lazy"></span><span class="meta"><b>${esc(c.name)}</b><small><span data-subs="${c.key}">${c.subs}</span> ${c.tt ? 'sledujúcich' : 'odberateľov'}</small></span><a class="yt" href="${c.url}" target="_blank" rel="noopener" aria-label="${c.tt ? 'TikTok profil' : 'YouTube kanál'} ${esc(c.name)}" onclick="event.stopPropagation()">↗</a><span class="glare"></span></button>`).join('');
   clientsEl.querySelectorAll('[data-subs]').forEach(el => track(el, 1500, 250));
 
   const eye = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -1079,8 +1087,8 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
     const c = CLIENTS.find(x => x.key === k), n = c.videos.length;
     sel.innerHTML = `<div class="sel-l"><img src="${av(c)}" alt="" width="44" height="44">
       <div class="sel-name"><span>Vybraný klient:</span> ${esc(c.name)}</div>
-      <span class="sel-badge"><span data-subs="${c.key}">${c.subs}</span> odberateľov</span></div>
-      <div class="sel-r"><span>${n} ${projWord(n)}</span><a href="${c.url}" target="_blank" rel="noopener">${ytIc}YouTube kanál ↗</a></div>`;
+      <span class="sel-badge"><span data-subs="${c.key}">${c.subs}</span> ${c.tt ? 'sledujúcich' : 'odberateľov'}</span></div>
+      <div class="sel-r"><span>${n} ${projWord(n)}</span><a href="${c.url}" target="_blank" rel="noopener">${c.tt ? 'TikTok profil ↗' : ytIc + 'YouTube kanál ↗'}</a></div>`;
     track(sel.querySelector('.sel-badge [data-subs]'), 1500, 250);
     if (sel.classList.contains('in')) startCounters(sel, 0);
   }
@@ -1090,7 +1098,7 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
     grid.innerHTML = list.map((v, i) => `
       <button class="card" data-reveal style="--d:${Math.min(i, 8) * 80}ms" data-id="${v.id}" data-short="${v.short}" data-play aria-label="Prehrať: ${esc(v.title)}">
         <div class="thumb"><img src="${thumb(v.id)}" alt="" loading="lazy"><span class="shade"></span>
-          <span class="badge">${v.short ? 'YT SHORT' : 'YOUTUBE'}</span><span class="views" data-views="${v.id}">${VIEWS[v.id] ? eye + `<b class="vn">${fmtViews(VIEWS[v.id])}</b>` : ''}</span><span class="play"><i></i></span></div>
+          <span class="badge">${isTT(v.id) ? 'TIKTOK' : v.short ? 'YT SHORT' : 'YOUTUBE'}</span><span class="views" data-views="${v.id}">${VIEWS[v.id] ? eye + `<b class="vn">${fmtViews(VIEWS[v.id])}</b>` : ''}</span><span class="play"><i></i></span></div>
         <div class="card-body"><h3>${esc(v.title)}</h3><div class="owner"><img src="${av(v.c)}" alt="" width="24" height="24">${esc(v.c.name)} · <span data-subs="${v.c.key}">${v.c.subs}</span></div></div>
         <span class="glare"></span>
       </button>`).join('');
@@ -1136,12 +1144,14 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
   const modal = document.getElementById('modal'), player = document.getElementById('player'), box = document.getElementById('modalBox');
   document.addEventListener('click', e => {
     const c = e.target.closest('.card, .tile'); if (!c) return;
-    const short = c.dataset.short === 'true', yt = `https://www.youtube.com/${short ? 'shorts/' : 'watch?v='}${c.dataset.id}`;
+    const id = c.dataset.id, tt = isTT(id), short = c.dataset.short === 'true';
+    const yt = tt ? `${ALL.find(v => v.id === id).c.url}/video/${id}` : `https://www.youtube.com/${short ? 'shorts/' : 'watch?v='}${id}`;
     // web otvorený zo súboru v počítači YouTube prehrávať nedovolí (chyba 153) – video sa vtedy otvorí priamo na YouTube
     if (location.protocol === 'file:') { window.open(yt, '_blank', 'noopener'); return; }
     box.classList.toggle('short', short);
-    document.getElementById('modalYt').href = yt;
-    player.src = `https://www.youtube-nocookie.com/embed/${c.dataset.id}?autoplay=1&rel=0&playsinline=1`;
+    const link = document.getElementById('modalYt');
+    link.href = yt; link.textContent = tt ? 'Pozrieť priamo na TikToku ↗' : 'Pozrieť priamo na YouTube ↗';
+    player.src = tt ? `https://www.tiktok.com/player/v1/${id}?autoplay=1` : `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`;
     modal.classList.add('open'); lock(true);
     document.getElementById('modalClose').focus();
   });
@@ -1421,7 +1431,7 @@ footer{position:relative;padding:44px 0 50px;border-top:1px solid var(--line);ma
   const cache = store.get('zf_views_v1');
   if (cache && cache.v) { Object.assign(VIEWS, cache.v); applyViews(); }
   if (!cache || Date.now() - cache.t > 864e5) {
-    Promise.allSettled(ALL.map(v => fetch(`https://returnyoutubedislikeapi.com/votes?videoId=${v.id}`).then(r => r.json()).then(d => { if (d && d.viewCount) VIEWS[v.id] = d.viewCount; })))
+    Promise.allSettled(ALL.filter(v => !isTT(v.id)).map(v => fetch(`https://returnyoutubedislikeapi.com/votes?videoId=${v.id}`).then(r => r.json()).then(d => { if (d && d.viewCount) VIEWS[v.id] = d.viewCount; })))
       .then(() => { if (Object.keys(VIEWS).length) { store.set('zf_views_v1', { t: Date.now(), v: VIEWS }); applyViews(); } });
   }
   refreshTotals();

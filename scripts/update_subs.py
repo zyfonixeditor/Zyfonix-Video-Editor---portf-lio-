@@ -16,6 +16,8 @@ CHANNELS = {
     "twiler": "https://www.youtube.com/channel/UCvT293-aCO9EbKaPJM3tA7Q",
     "nardosk": "https://www.youtube.com/@Nardosk1",
     "stepsirl": "https://www.youtube.com/channel/UCuQwP1mNT0Nl0LBu4tSXhgw",
+    "mgfitman_roblox": "https://www.youtube.com/@MGFitmanRoblox",
+    "shrnuto": "https://www.youtube.com/@Shrnuto",
 }
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "subs.json")
 
